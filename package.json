@@ -51,8 +51,10 @@
     "@dcloudio/uni-mp-toutiao": "3.0.0-3070920230324001",
     "@dcloudio/uni-mp-weixin": "3.0.0-3070920230324001",
     "@dcloudio/uni-quickapp-webview": "3.0.0-3070920230324001",
+    "miniprogram-api-typings": "^3.9.1",
     "vue": "^3.2.45",
-    "vue-i18n": "^9.1.9"
+    "vue-i18n": "^9.1.9",
+    "wx-server-sdk": "^2.6.3"
   },
   "devDependencies": {
     "@dcloudio/types": "^3.3.2",
