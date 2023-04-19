@@ -3,7 +3,19 @@
 		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "uni-app"
+				"navigationBarTitleText": "青蜂跑腿"
+			}
+		},
+		{
+			"path": "pages/my-orders/my-orders",
+			"style": {
+				"navigationBarTitleText": "我的订单"
+			}
+		},
+		{
+			"path": "pages/my-profile/my-profile",
+			"style": {
+				"navigationBarTitleText": "个人资料"
 			}
 		}
 	],
@@ -12,5 +24,57 @@
 		"navigationBarTitleText": "uni-app",
 		"navigationBarBackgroundColor": "#F8F8F8",
 		"backgroundColor": "#F8F8F8"
+	},"tabBar": {
+		"color": "#7A7E83",
+		"selectedColor": "#007aff",
+		"borderStyle": "black",
+		"backgroundColor": "#FFFFFF",
+		"height": "50px",
+		"fontSize": "10px",
+		"iconWidth": "24px",
+		"spacing": "5px",
+    	"iconfontSrc":"static/iconfont.ttf", // app tabbar 字体.ttf文件路径 app 3.4.4+
+		"list": [{
+			"pagePath": "pages/index/index",
+			"iconPath": "./static/image/index.png",
+			"selectedIconPath": "./static/image/index.png",
+			"text": "首页",
+      		"iconfont": { // 优先级高于 iconPath，该属性依赖 tabbar 根节点的 iconfontSrc
+       			"text": "\ue102",
+        		"selectedText": "\ue103",
+        		"fontSize": "17px",
+        		"color": "#000000",
+        		"selectedColor": "#0000ff"
+      		}
+		},
+		{
+			"pagePath": "pages/my-orders/my-orders",
+			"iconPath": "./static/image/my-orders.png",
+			"selectedIconPath": "./static/image/my-orders.png",
+			"text": "订单"
+		},
+		{
+			"pagePath": "pages/my-profile/my-profile",
+			"iconPath": "./static/image/my-profile.png",
+			"selectedIconPath": "./static/image/my-profile.png",
+			"text": "我的"
+		}],
+		"midButton": {
+			"width": "80px",
+			"height": "50px",
+			"text": "文字",
+			"iconPath": "static/image/midButton_iconPath.png",
+			"iconWidth": "24px",
+			"backgroundImage": "static/image/midButton_backgroundImage.png"
+		}
+	},
+	"condition": { //模式配置，仅开发期间生效
+		"current": 0, //当前激活的模式（list 的索引项）
+		"list": [
+			{
+				"name": "test", //模式名称
+				"path": "pages/my-profile/my-profile" //启动页面，必选
+			}
+		]
 	}
 }

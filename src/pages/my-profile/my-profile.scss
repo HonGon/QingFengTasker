@@ -1,0 +1,57 @@
+@import "../../common/global.scss";
+
+.avatar {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: $margin-block;
+    border-radius: $card-radius;
+    width: 720rpx;
+    background-color: $color-white;
+    &-image {
+        margin: $margin-block;
+        align-self: center;
+        height: 150rpx;
+        width: 150rpx;
+        border-radius: 75rpx;
+    }
+    &-nickname {
+        margin-bottom: $margin-block;
+        white-space: nowrap;
+        align-self: center;
+        font-size: 35rpx;
+        font-weight: bolder;
+    }
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    margin: $margin-block;
+    height: 1068rpx;
+    width: 720rpx;
+    background-color: $color-white;
+    border-radius: $card-radius;
+    &-item {
+        display: flex;
+        justify-content: flex-start;
+        margin: 25rpx;
+        border-bottom:1rpx solid $color-deep-gray;
+        padding-bottom: 10rpx;
+        width: 670rpx;
+        &-icon, &-arrow{
+            height: 50rpx;
+            width: 50rpx;
+        }
+        &-text {
+            margin-left: 30rpx;
+            font-size: 30rpx;
+            font-weight: bolder;
+            align-self: center;
+        }
+        &-arrow {
+            justify-self: end;
+        }
+    }
+}

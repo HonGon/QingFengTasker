@@ -1,0 +1,32 @@
+@import "../../common/global.scss";
+.content {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+.page-segement {
+    justify-self: flex-start;
+    width: 750rpx;
+    background-color: $color-white;
+    &-control{
+        height: 200rpx;
+        width: 750rpx;
+    }
+}
+
+.search{
+    display: flex;
+    justify-content: center;
+    background-color: $color-white;
+    width: 750rpx;
+    &-bar{
+        width: 500rpx;
+    }
+    &-selected{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 200rpx;
+    }
+}
