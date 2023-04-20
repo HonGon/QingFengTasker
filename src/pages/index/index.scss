@@ -3,20 +3,22 @@
 .notice {
     height: 445rpx;
     width: 750rpx;
+
     &-item {
         display: flex;
         flex-direction: row;
         justify-content: center;
         align-items: center;
+
         image {
             height: 100rpx;
             width: 100rpx;
         }
     }
-    
+
 }
 
-.post-icon-form{
+.post-icon-form {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -25,24 +27,27 @@
     margin: $margin-block;
     border-radius: 20rpx;
     background-color: #FFFFFF;
-    box-shadow:1rpx 1rpx 10rpx 2rpx $color-shadow;
+    box-shadow: 1rpx 1rpx 10rpx 2rpx $color-shadow;
+
     &-title {
         margin: 15rpx 0rpx 0rpx 20rpx;
         font-weight: bolder;
     }
+
     &-body {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
         flex-wrap: wrap;
         margin: 15rpx;
-        > text {
+
+        >text {
             font-size: 20rpx;
         }
     }
 }
 
-.take-icon-form{
+.take-icon-form {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -51,11 +56,13 @@
     margin: 5rpx 15rpx 20rpx 15rpx;
     border-radius: 20rpx;
     background-color: #FFFFFF;
-    box-shadow:1rpx 1rpx 10rpx 2rpx $color-shadow;
+    box-shadow: 1rpx 1rpx 10rpx 2rpx $color-shadow;
+
     &-title {
         margin: 15rpx 0rpx 0rpx 20rpx;
         font-weight: bolder;
     }
+
     &-body {
         display: flex;
         flex-direction: row;
@@ -65,7 +72,8 @@
     }
 }
 
-.post-icon-form-body-item, .take-icon-form-body-item {
+.post-icon-form-body-item,
+.take-icon-form-body-item {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -73,13 +81,14 @@
     margin: 10rpx;
     height: 150rpx;
     width: 150rpx;
+
     image {
         height: 100rpx;
         width: 100rpx;
     }
+
     text {
         font-size: 30rpx;
         font-weight: 200;
     }
 }
-

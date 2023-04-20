@@ -27,18 +27,13 @@
                 <uni-icons type="forward" size="30"></uni-icons>
             </view>
         </view>
-        
     </view>
 </template>
 
-<script>
-import UniIcons from '@dcloudio/uni-ui/lib/uni-icons/uni-icons.vue'
-export default {
-    components:{UniIcons}
-}
+<script setup>
+
 </script>
 
 <style lang="scss" scoped>
 @import "./my-profile.scss";
-
 </style>

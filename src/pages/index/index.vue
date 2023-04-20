@@ -37,7 +37,7 @@
 
         <view class="post-icon-form-body-item">
           <image src="../static/image/index.png"></image>
-          <text>帮拿快递</text>
+          <text>帮送文件</text>
         </view>
         <view class="post-icon-form-body-item">
           <image src="../static/image/index.png"></image>
@@ -64,34 +64,8 @@
   </view>
 </template>
 
-<script>
-import { withCtx } from 'vue'
-
-export default {
-  data() {
-    return {
-      title: 'Hello',
-    }
-  },
-  onLoad() {
-
-  },
-  methods: {
-    onclick(e) {
-      //   wx.cloud.callFunction({
-      //   name:"add",
-      //   data:{
-      //     a : 1,
-      //     b : 2,
-      //   },
-      // })
-      // .then(res => {
-      //   console.log(res.result)
-      // })
-      // .catch(console.error)
-    }
-  },
-}
+<script setup>
+import { ref } from 'vue'
 </script>
 
 <style lang="scss">
