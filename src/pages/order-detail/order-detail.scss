@@ -1,0 +1,17 @@
+@import "../../common/global.scss";
+@import "../../uni.scss";
+
+.content{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+.position{
+    width: 750rpx;
+    &-row-1{
+        height: 50rpx;
+        background-color: $color-deep-gray;
+        border-radius: 15rpx;
+    }
+}

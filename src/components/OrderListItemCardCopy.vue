@@ -1,20 +1,20 @@
 <template>
     <uni-card class="order-list-item">
         <!-- 订单项标题栏 -->
-        <uni-row>
-            <uni-col :span="24">
-                <view class="order-list-item-head">
-                    <view class="order-list-item-head-icon">
-                        <uni-icons type="help" size="30"></uni-icons>
-                        <view class="order-list-item-head-icon-text">{{ orderType }}</view>
-                    </view>
+        <uni-row class="order-list-item-head">
+            <uni-col :span="8">
+                <view class="order-list-item-head-icon">
+                    <uni-icons type="help" size="30"></uni-icons>
+                    <view class="order-list-item-head-icon-text">{{ orderType }}</view>
+                </view>
+            </uni-col>
 
-                    <view class="order-list-item-head-state">
-                        <text class="order-list-item-head-state-detail">
-                            {{ stateType }}
-                        </text>
-                        <text class="order-list-item-head-state-date">2023年5月1日 10:00:00</text>
-                    </view>
+            <uni-col :span="12" :push="4">
+                <view class="order-list-item-head-state">
+                    <text class="order-list-item-head-state-detail">
+                        {{ stateType }}
+                    </text>
+                    <text class="order-list-item-head-state-date">2023年5月1日 10:00:00</text>
                 </view>
             </uni-col>
         </uni-row>
@@ -75,34 +75,35 @@
         </uni-row>
 
         <!-- 订单项页脚 -->
-        <uni-row>
-            <uni-col :span="24">
-                <view class="order-list-item-footer">
-                    <!-- 页脚上层部分 -->
-                    <view class="footer-top">
-                        <!-- 悬赏金额 -->
-                        <view class="order-list-item-footer-reward">
-                            <text class="order-list-item-footer-reward-text">报酬：</text>
-                            <text class="order-list-item-footer-reward-detail">5元</text>
-                        </view>
+        <uni-row class="order-list-item-footer">
+            <uni-row>
+                <!-- 悬赏金额 -->
+                <uni-col :span="24">
+                    <view class="order-list-item-footer-reward">
+                        <text class="order-list-item-footer-reward-text">报酬：</text>
+                        <text class="order-list-item-footer-reward-detail">5元</text>
                     </view>
-                    <!-- 页脚下层部分 -->
-                    <view class="footer-bottom">
-                        <!-- 倒计时-->
-                        <view class="order-list-item-footer-countdown">
-                            <text class="order-list-item-footer-countdown-text">剩余时间：</text>
-                            <view class="order-list-item-footer-countdown-detail">
-                                <uni-countdown v-if="showCountdown" color="#FFFFFF" background-color="#007AFF"
-                                    :font-size="13" :show-day="false" :second="countDown.sec"></uni-countdown>
-                                <text v-else> 已过期</text>
-                            </view>
-                        </view>
+                </uni-col>
+            </uni-row>
 
-                        <!-- 按钮 -->
-                        <view class="order-list-item-footer-button" type="default">查看</view>
+            <uni-row>
+                <!-- 倒计时-->
+                <uni-col :span="14">
+                    <view class="order-list-item-footer-countdown">
+                        <text class="order-list-item-footer-countdown-text">剩余时间：</text>
+                        <view class="order-list-item-footer-countdown-detail">
+                            <uni-countdown v-if="showCountdown" color="#FFFFFF" background-color="#007AFF" :font-size="13"
+                                :show-day="false" :second="countDown.sec"></uni-countdown>
+                            <text v-else> 已过期</text>
+                        </view>
                     </view>
-                </view>
-            </uni-col>
+                </uni-col>
+
+                <!-- 按钮 -->
+                <uni-col :span="8" :offset="2">
+                    <view class="order-list-item-footer-button" type="default">查看</view>
+                </uni-col>
+            </uni-row>
         </uni-row>
     </uni-card>
 </template>
@@ -184,11 +185,6 @@ onMounted(() => {
     border-radius: $card-radius;
 
     &-head {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 15rpx;
-        border-bottom: 1rpx solid #b7b7b7;
-
         &-icon {
             display: flex;
             justify-content: flex-start;
@@ -232,10 +228,9 @@ onMounted(() => {
     }
 
     &-footer {
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: center;
+        .uni-col {
+            align-self: center;
+        }
 
         &-countdown {
             display: flex;
@@ -267,7 +262,7 @@ onMounted(() => {
             margin: 15rpx 0;
             padding: 6rpx;
             height: 50rpx;
-            width: 100%;
+            width: 594rpx;
             background-color: #dd524d;
             border-radius: 5rpx 15rpx;
             color: #FFFFFF;
@@ -294,16 +289,5 @@ onMounted(() => {
             border-radius: 15rpx 5rpx;
         }
     }
-}
-
-.footer-top {
-    display: flex;
-    width: 100%
-}
-
-.footer-bottom {
-    display: flex;
-    justify-content: space-between;
-    width: 100%
 }
 </style>

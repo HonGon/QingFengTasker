@@ -24,7 +24,14 @@
 			"style": {
 				"navigationBarTitleText": "个人资料"
 			}
+		},
+		{
+			"path": "pages/order-detail/order-detail",
+			"style": {
+				"navigationBarTitleText": "订单详情"
+			}
 		}
+
 	],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
@@ -80,7 +87,7 @@
 		"list": [
 			{
 				"name": "test", //模式名称
-				"path": "pages/my-profile/my-profile" //启动页面，必选
+				"path": "pages/order-detail/order-detail" //启动页面，必选
 			}
 		]
 	}

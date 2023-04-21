@@ -4,7 +4,8 @@ $order-list-item-font-size: 28rpx;
 .content {
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    justify-content: center;
+    align-items: center;
 }
 
 .header {
@@ -51,6 +52,5 @@ $order-list-item-font-size: 28rpx;
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-    margin: $margin-block;
-    width: 720rpx;
+    width: 750rpx;
 }

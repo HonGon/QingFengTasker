@@ -49,13 +49,22 @@
     /* 快应用特有相关 */
     "quickapp" : {},
     /* 小程序特有相关 */
-    "mp-weixin" : {
-        "appid" : "",
-        "setting" : {
-            "urlCheck" : false
+    "mp-weixin": {
+        "appid": "",
+        "setting": {
+            "urlCheck": false
         },
-        "cloudfunctionRoot":"./static/cloudfunctions/",
-        "usingComponents" : true
+        "cloudfunctionRoot": "./static/cloudfunctions/",
+        "usingComponents": true,
+        "requiredPrivateInfos": [
+            "getLocation",
+            "chooseLocation"
+        ],
+        "permission": {
+            "scope.userLocation": {
+                "desc": "你的位置信息将用于小程序位置接口的效果展示" // 高速公路行驶持续后台定位
+            }
+        }
     },
     "mp-alipay" : {
         "usingComponents" : true
