@@ -1,0 +1,132 @@
+[
+    {
+        "id": "202304201681985555",
+        "type": 1,
+        "state": 1,
+        "postTimestamp": "1682131166",
+        "content": "去拿东北门拿外卖去拿东北门拿外卖去拿东北门拿外卖去拿东北门拿外卖",
+        "startAddress": "东北门",
+        "endAddress": "学生宿舍C栋",
+        "releatedOb": {
+            "weight": "0.5Kg",
+            "volume": "小"
+        },
+        "note": "请尽快取件",
+        "endTime": "1682144252",
+        "reward": 1,
+        "poster": {
+            "uid": "1782996909",
+            "name": "韩先生",
+            "phoneNumber": "18212227876"
+        },
+        "taker": {
+            "uid": "1792996920",
+            "name": "李先生",
+            "phoneNumber": "1910367898",
+            "latestPosition": ""
+        },
+        "attachmentList": [
+            "../../static/1.jpg"
+        ],
+        "startAddressDetail": "东北门左边",
+        "endAddressDetail": "C1-601B室"
+    },
+    {
+        "id": "202304201681985555",
+        "type": 2,
+        "state": 2,
+        "postTimestamp": "1682132166",
+        "content": "去图书馆楼下拿快递拿快递去图书馆楼下拿快递拿快递去图书馆楼下拿快递拿快递",
+        "startAddress": "图书馆",
+        "endAddress": "学生宿舍C栋",
+        "releatedOb": {
+            "weight": "1.5Kg",
+            "volume": "大"
+        },
+        "note": "请尽快取件",
+        "endTime": "1682144352",
+        "reward": 3,
+        "poster": {
+            "uid": "1782996909",
+            "name": "韩先生",
+            "phoneNumber": "18212227876"
+        },
+        "taker": {
+            "uid": "1792996920",
+            "name": "张先生",
+            "phoneNumber": "1910367898",
+            "latestPosition": ""
+        },
+        "attachmentList": [
+            "../../static/1.jpg",
+            "../../static/logo.png"
+        ],
+        "startAddressDetail": "菜鸟驿站",
+        "endAddressDetail": "C1-601B室"
+    },
+    {
+        "id": "202304201681985555",
+        "type": 3,
+        "state": 3,
+        "postTimestamp": "1682132166",
+        "content": "去拿东北门拿外卖去拿东北门拿外卖去拿东北门拿外卖去拿东北门拿外卖",
+        "startAddress": "东北门",
+        "endAddress": "学生宿舍C栋",
+        "releatedOb": {
+            "weight": "0.5Kg",
+            "volume": "大"
+        },
+        "note": "请尽快取件",
+        "endTime": "1682144352",
+        "reward": 2,
+        "poster": {
+            "uid": "1782996909",
+            "name": "韩先生",
+            "phoneNumber": "18212227876"
+        },
+        "taker": {
+            "uid": "1792996920",
+            "name": "张先生",
+            "phoneNumber": "1910367898",
+            "latestPosition": ""
+        },
+        "attachmentList": [
+            "../../static/1.jpg",
+            "../../static/logo.png",
+            "../../static/logo.png"
+        ],
+        "startAddressDetail": "东北门左边",
+        "endAddressDetail": "C1-601B室"
+    },
+    {
+        "id": "202304201681985555",
+        "type": 4,
+        "state": 4,
+        "postTimestamp": "1682132166",
+        "content": "去拿东北门拿外卖去拿东北门拿外卖去拿东北门拿外卖去拿东北门拿外卖",
+        "startAddress": "东北门",
+        "endAddress": "学生宿舍C栋",
+        "releatedOb": {
+            "weight": "0.5Kg",
+            "volume": "小"
+        },
+        "note": "请尽快取件",
+        "endTime": "1682144352",
+        "reward": 1,
+        "poster": {
+            "uid": "1792996920",
+            "name": "张先生",
+            "phoneNumber": "1910367898"
+        },
+        "taker": {
+            "uid": "1782996909",
+            "name": "韩先生",
+            "phoneNumber": "18212227876",
+            "latestPosition": ""
+        },
+        "attachmentList": [
+        ],
+        "startAddressDetail": "东北门左边",
+        "endAddressDetail": "C1-601B室"
+    }
+]

@@ -9,8 +9,8 @@ $order-list-item-font-size: 28rpx;
 }
 
 .header {
-    position: sticky;
-    top: 0rpx;
+    position: fixed;
+    top: 0;
     z-index: 99;
 
     &-page-segement {
@@ -52,5 +52,10 @@ $order-list-item-font-size: 28rpx;
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
+    padding-top: 180rpx;
+    padding-bottom: 100rpx;
     width: 750rpx;
+    > order-list-item-card {
+        width: 750rpx;
+    }
 }

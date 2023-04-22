@@ -9,6 +9,7 @@
 <script setup>
 import { ref, onMounted, onUpdated } from "vue"
 import { onLoad, onShow } from "@dcloudio/uni-app";
+import { onBeforeUpdate } from "vue";
 
 //响应式状态
 const scale = ref(16)               //地图缩放程度
@@ -28,7 +29,7 @@ const props = defineProps({
     markers: {
         type: Array,
         required: true
-    }
+    },
 })
 
 
@@ -52,9 +53,7 @@ function onTapMarker(e) {
     emit("chooseNewLocation", { name, longitude, latitude })
 }
 
-onShow(() => {
-    //console.log(props.markers)
-
+onBeforeUpdate(() => {
     //从全局变量获取地图中心位置信息
     let centerLocationTemp = uni.getStorageSync("centerLocation")
     // console.log("地图中心信息", centerLocationTemp)
@@ -63,7 +62,7 @@ onShow(() => {
 })
 
 onMounted(() => {
-    //
+    //接受父组件传入的地图标记点
     markers.value = props.markers
 })
 </script>
@@ -74,9 +73,9 @@ onMounted(() => {
 .map-component {
     margin: $margin-block;
     background-color: $color-white;
-    width: 720rpx;
+    width: 700rpx;
     > map {
-        height: 800rpx;
+        height: 400rpx;
         width: 720rpx;
     }
 }

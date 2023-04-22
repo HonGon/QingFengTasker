@@ -6,14 +6,14 @@
                 <view class="order-list-item-head">
                     <view class="order-list-item-head-icon">
                         <uni-icons type="help" size="30"></uni-icons>
-                        <view class="order-list-item-head-icon-text">{{ orderType }}</view>
+                        <view class="order-list-item-head-icon-text">{{ orderTypeDetail }}</view>
                     </view>
 
                     <view class="order-list-item-head-state">
                         <text class="order-list-item-head-state-detail">
-                            {{ stateType }}
+                            {{ orderStateDetail }}
                         </text>
-                        <text class="order-list-item-head-state-date">2023年5月1日 10:00:00</text>
+                        <text class="order-list-item-head-state-date">{{ postTimeDetail }}</text>
                     </view>
                 </view>
             </uni-col>
@@ -42,7 +42,7 @@
             <!-- 终点地址 -->
             <uni-row>
                 <uni-col :span="6">
-                    <text class="order-list-item-body-row-type">目的地址：</text>
+                    <text class="order-list-item-body-row-type">终点地址：</text>
                 </uni-col>
                 <uni-col :span="16" :push="2">
                     <text class="order-list-item-body-row-end-address">{{ order.endAddress }}</text>
@@ -83,7 +83,7 @@
                         <!-- 悬赏金额 -->
                         <view class="order-list-item-footer-reward">
                             <text class="order-list-item-footer-reward-text">报酬：</text>
-                            <text class="order-list-item-footer-reward-detail">5元</text>
+                            <text class="order-list-item-footer-reward-detail">{{ order.reward }} 元</text>
                         </view>
                     </view>
                     <!-- 页脚下层部分 -->
@@ -93,13 +93,14 @@
                             <text class="order-list-item-footer-countdown-text">剩余时间：</text>
                             <view class="order-list-item-footer-countdown-detail">
                                 <uni-countdown v-if="showCountdown" color="#FFFFFF" background-color="#007AFF"
-                                    :font-size="13" :show-day="false" :second="countDown.sec"></uni-countdown>
+                                    :font-size="13" :show-day="false" :second="countDownSecond"></uni-countdown>
                                 <text v-else> 已过期</text>
                             </view>
                         </view>
 
                         <!-- 按钮 -->
-                        <view class="order-list-item-footer-button" type="default">查看</view>
+                        <view v-if="showButton" class="order-list-item-footer-button" @click="onClickOrderItem">{{
+                            buttonTypeDetail }}</view>
                     </view>
                 </view>
             </uni-col>
@@ -108,68 +109,98 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { onMounted } from 'vue';
+import { ref, computed, watch } from 'vue';
 
 //响应式状态
-const orderType = ref("")
-const stateType = ref("")
+// const orderType = ref("")
+// const stateType = ref("")
+
+const orderTypeRange = ref(["帮取快递", "帮寄快递", "帮取外卖", "帮送文件", "其他委托"])
+const stateTypeRange = ref(["待接取", "执行中", "未付款", "已完成"])
+
 const showCountdown = ref(true)
-const countDown = ref({
-    sec: 2000,
+const countDownSecond = ref(0)
+const buttonTypeRange = ref(["接下", "查看"])
+
+//计算属性
+const orderTypeDetail = computed(() => {
+    //按照订单类型显示不同卡片头部
+    return orderTypeRange.value[props.order.type - 1]
 })
-const options = ref({
-    styleIsolation: 'shared'
+
+const orderStateDetail = computed(() => {
+    //按照订单状态显示不同卡片头部
+    return stateTypeRange.value[props.order.state - 1]
 })
+const postTimeDetail = computed(() => {
+    //将订单的发布时间戳转换为日期形式
+    let postTimeDate = new Date(parseInt(props.order.postTimestamp) * 1000)
+    return postTimeDate.toLocaleDateString().replace(/\//g, "-") + " " + postTimeDate.toTimeString().substr(0, 8);
+})
+const buttonTypeDetail = computed(() => {
+    //如果父组件传来的按钮标号为1，2时，分别显示“接下”,“查看”
+    return buttonTypeRange.value[props.buttonTypeIndex - 1]
+})
+const showButton = computed(() => {
+    //如果父组件传来的按钮标号为3时，则卡片不显示按钮
+    return !(props.buttonTypeIndex === 3)
+})
+
 
 //Props
 const props = defineProps({
     order: {
         type: Object,
         required: true,
+    },
+    buttonTypeIndex: {
+        type: Number,
+        required: true
     }
 })
+
+//Emits
+const emit = defineEmits({
+    clickOrderItem: null
+})
+
+//方法
+//监听订单项卡片的点击事件
+function onClickOrderItem() {
+    // let orderId = props.order.id
+    // let posterUid = props.order.poster.uid
+
+
+    //向父组件抛出clickOrderItem事件
+    emit("clickOrderItem", { targetOrder: props.order, buttonTypeIndex: props.buttonTypeIndex })
+}
+
+//侦听器
+watch(() => props.order.endtime, () => {
+    //计算页面倒计时
+    let endTime = parseInt(props.order.endTime)
+    let nowTime = parseInt(Date.now() / 1000)
+    let difference = endTime - nowTime
+    //console.log("时间差是", difference);
+    if (difference > 0) {
+        countDownSecond.value = difference
+    } else {
+        showCountdown.value = false
+    }
+})
+
+//挂载前
 onMounted(() => {
     // console.log(props.order.endTime)
-
-    //按照订单类型显示不同卡片头部
-    let typeIndex = props.order.type
-    if (typeIndex == 0) {
-        orderType.value = "帮取快递"
-    }
-    if (typeIndex == 1) {
-        orderType.value = "帮寄快递"
-    }
-    if (typeIndex == 2) {
-        orderType.value = "帮取外卖"
-    }
-    if (typeIndex == 3) {
-        orderType.value = "帮送文件"
-    }
-    if (typeIndex == 4) {
-        orderType.value = "其他委托"
-    }
-
-    let stateIndex = props.order.state
-    if (stateIndex == 0) {
-        stateType.value = "未接取"
-    }
-    if (stateIndex == 1) {
-        stateType.value = "执行中"
-    }
-    if (stateIndex == 2) {
-        stateType.value = "未付款"
-    }
-    if (stateIndex == 3) {
-        stateType.value = "已完成"
-    }
 
     //计算页面倒计时
     let endTime = parseInt(props.order.endTime)
     let nowTime = parseInt(Date.now() / 1000)
     let difference = endTime - nowTime
-    console.log("时间差是", difference);
+    //console.log("时间差是", difference);
     if (difference > 0) {
-        countDown.value.sec = difference
+        countDownSecond.value = difference
     } else {
         showCountdown.value = false
     }

@@ -14,8 +14,8 @@
                 </view>
                 <view class="header-search-order-state">
                     <text class="header-search-order-state-text">筛选</text>
-                    <uni-data-select class="header-search-order-state-selected" v-model="orderState"
-                        :localdata="orderStateRange"></uni-data-select>
+                    <uni-data-select class="header-search-order-state-selected" v-model="orderStateCondition"
+                        :localdata="orderStateConditionRange" @change="onorderStateConditionChange"></uni-data-select>
                 </view>
             </view>
         </view>
@@ -23,13 +23,12 @@
 
         <!-- 订单列表 -->
         <view class="order-list">
-            <OrderListItemCard :order="order"></OrderListItemCard>
-            <OrderListItemCard :order="order"></OrderListItemCard>
-            <OrderListItemCard :order="order"></OrderListItemCard>
+
+            <template v-for="order in orderListFilter">
+                <OrderListItemCard :order="order" @clickOrderItem="checkOrderDetail" :buttonTypeIndex="2">
+                </OrderListItemCard>
+            </template>
         </view>
-
-        <BottomPanel :showCancel="true" :showUpdate="true"></BottomPanel>
-
     </scroll-view>
 </template>
 
@@ -38,76 +37,114 @@ import { ref } from 'vue'
 import { onLoad } from "@dcloudio/uni-app"
 import { OrderListItemCard } from "../../components/OrderListItemCard.vue";
 import { BottomPanel } from "../../components/BottomPanel.vue";
+import { computed } from 'vue';
 
 //响应式状态
 const segIndex = ref(0)
 const segItems = ref(["我发布的", "我接下的"])
-const orderState = ref(0)
-const orderStateRange = ref([
-    { orderState: 0, text: "全部" },
-    { orderState: 1, text: "未接下" },
-    { orderState: 2, text: "执行中" },
-    { orderState: 3, text: "未付款" },
-    { orderState: 4, text: "已完成" }
+const orderStateCondition = ref(0)
+const orderStateConditionRange = ref([
+    { value: 0, text: "全部" },
+    { value: 1, text: "待接取" },
+    { value: 2, text: "执行中" },
+    { value: 3, text: "未付款" },
+    { value: 4, text: "已完成" }
 ])
-const countDown = ref({
-    hour: 1,
-    min: 20,
-    sec: 59,
+const orderList = ref([])
+
+//计算属性
+//筛选将要展示的订单列表
+const orderListFilter = computed(() => {
+    let user = {
+        uid: "1782996909",
+        name: ""
+    }
+    uni.setStorageSync("currentUser", user)
+
+    //从全局变量中获取当前的用户信息
+    let currentUser = uni.getStorageSync("currentUser")
+    let resultList = []
+
+    //筛选是用户发布还是接下的订单
+    if (segIndex.value === 0) {
+        resultList = orderList.value.filter((order) => {
+            return order.poster.uid === currentUser.uid
+        })
+    } else {
+        resultList = orderList.value.filter((order) => {
+            return order.taker.uid === currentUser.uid
+        })
+    }
+    //根据订单状态进行筛选
+    if (orderStateCondition.value === 1) {
+        resultList = resultList.filter((order) => {
+            return order.state === 1
+        })
+    } else if (orderStateCondition.value === 2) {
+        resultList = resultList.filter((order) => {
+            return order.state === 2
+        })
+    } else if (orderStateCondition.value === 3) {
+        resultList = resultList.filter((order) => {
+            return order.state === 3
+        })
+    } else if (orderStateCondition.value === 4) {
+        resultList = resultList.filter((order) => {
+            return order.state === 4
+        })
+    }
+    return resultList
 })
-const order = ref({})
+
 
 //方法
 function onSegmentChange(e) {
-    console.log(e);
+    console.log("当前分页标签", e);
     if (segIndex.value != e.currentIndex) {
         segIndex.value = e.currentIndex;
     }
     if (segIndex.value == 0) {
-        orderStateRange.value = [
-            { orderState: 0, text: "全部" },
-            { orderState: 1, text: "未接下" },
-            { orderState: 2, text: "执行中" },
-            { orderState: 3, text: "未付款" },
-            { orderState: 4, text: "已完成" }
+        orderStateConditionRange.value = [
+            { value: 0, text: "全部" },
+            { value: 1, text: "待接取" },
+            { value: 2, text: "执行中" },
+            { value: 3, text: "未付款" },
+            { value: 4, text: "已完成" }
         ]
     } else {
-        orderStateRange.value = [
-            { orderState: 0, text: "全部" },
-            { orderState: 2, text: "执行中" },
-            { orderState: 3, text: "未付款" },
-            { orderState: 4, text: "已完成" }
+        orderStateConditionRange.value = [
+            { value: 0, text: "全部" },
+            { value: 2, text: "执行中" },
+            { value: 3, text: "未付款" },
+            { value: 4, text: "已完成" }
         ]
     }
+    orderStateCondition.value = 0
 }
 
+//处理筛选条件变化事件
+function onorderStateConditionChange(e) {
+    console.log("当前订单状态筛选条件标签", e)
+}
+
+
+
+//处理订单项卡片点击事件
+function checkOrderDetail(e) {
+    console.log("来自子组件的点击事件！", e)
+
+    uni.setStorageSync("orderDetail", e.targetOrder)
+    uni.navigateTo({
+        url: "../order-detail/order-detail"
+    })
+}
+
+
 //页面生命周期
-onLoad(() => {
-    order.value = {
-        id: "202304201681984902",        //订单编号
-        type: 4,                        //委托类型
-        state: 1,                       //订单状态
-        content: "去图书馆下拿快递去图书馆下拿快递去图书馆下拿快递去图书馆下拿快递去图书馆下拿快递",      //委托内容
-        startAddress: "图书馆",          //起始地址
-        endAddress: "学生宿舍C栋601B",   //目的地址
-        releatedOb: {                   //委托相关物品信息
-            weight: "3Kg",
-            volume: "超大",
-        },
-        note: "请尽快取件",              //订单备注
-        endTime: "1682996902",          //委托完成截止时间
-        reward: "10元",                 //委托报酬
-        poster: {                       //委托发布者信息
-            name: "",                   //称呼
-            phoneNumber: ""             //联系电话
-        },
-        taker: {                        //委托承接者信息
-            name: "",
-            phoneNumber: "",
-            latestPosition: ""          //骑手的最新位置
-        },
-        attachmentList: ["", ""],        //图片附件url列表
-    }
+onLoad(async () => {
+    //获取订单列表
+    const result = await import("../../static/order-collection.json")
+    orderList.value = result.default
 })
 </script>
 
