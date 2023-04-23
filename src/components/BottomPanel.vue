@@ -4,6 +4,7 @@
         <button v-if="showUpdate" @click="onClick(2)"  class="bottom-panel-update">修改</button>
         <button v-if="showBack" @click="onClick(3)"  class="bottom-panel-back">返回</button>
         <button v-if="showPay" @click="onClick(4)"   class="bottom-panel-pay">支付</button>
+        <button v-if="showPost" @click="onClick(5)"   class="bottom-panel-post">发布</button>
     </view>
 </template>
 
@@ -14,7 +15,7 @@ const props = defineProps({
     buttonIndexArray:{
         type:Array,
         required:true,
-        default:[0,0,1,0]
+        default:[0,0,1,0,0]
     }
 })
 
@@ -34,6 +35,9 @@ const showBack = computed( () => {
 })
 const showPay = computed( () => {
     return props.buttonIndexArray[3] === 1 ? true:false
+})
+const showPost = computed( () => {
+    return props.buttonIndexArray[4] === 1 ? true:false
 })
 
 //处理底部面板的点击事件
@@ -61,7 +65,8 @@ function onClick(e){
     &-cancel,
     &-update,
     &-back,
-    &-pay {
+    &-pay,
+    &-post {
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -74,7 +79,7 @@ function onClick(e){
         color: #ffffff;
     }
 
-    &-cancel {
+    &-cancel,&-post {
         background-color: $uni-color-error;
     }
 

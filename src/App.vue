@@ -20,7 +20,7 @@ export default {
 /*每个页面公共css */
 
 .content{
-  height: 100vh;
+  height: 100%;
   width: 100vw;
   background-color: $color-light-gray;
   display: flex;

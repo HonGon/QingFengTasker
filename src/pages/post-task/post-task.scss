@@ -1,0 +1,124 @@
+@import "../../uni.scss";
+@import "../../common/global.scss";
+
+.content{
+    justify-content:flex-start;
+    padding-bottom: 80rpx;
+}
+
+.order-content{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bolder;
+    padding: 0 30rpx 30rpx;
+    > textarea {
+        width: 750rpx;
+    }
+}
+
+.input {
+    &-text {
+        width: 450rpx;
+    }
+}
+
+.address{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 30rpx 30rpx;
+    width: 690rpx;
+    font-weight: bolder;
+    &-button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 5rpx 30rpx;
+        border-radius: 5rpx 15rpx;
+        background-color: $uni-color-primary;
+        height: 50rpx;
+        font-size: 30rpx;
+        color: #FFFFFF;
+    }
+}
+
+.reward {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 250rpx;
+    font-weight: bolder;
+}
+
+.related-object-info{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 30rpx 30rpx;
+    width: 690rpx;
+    &-weight {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 400rpx;
+        > text {
+            margin-right: 20rpx;
+        }
+    }
+    &-volume {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 300rpx;
+        > uni-data-select{
+            font-weight: bolder;
+        }
+    }
+}
+
+.end-time{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 500rpx;
+    &-text{
+
+    }
+}
+
+.map-popup{
+    width: 750rpx;
+}
+
+.error {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 720rpx;
+    color: $uni-color-error;
+}
+
+.select{
+    padding: 0 30rpx;
+    font-weight: bolder;
+}
+
+.file {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 690rpx;
+    padding:0 30rpx 30rpx;
+}
+.button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5rpx 30rpx;
+    border-radius: 5rpx 15rpx;
+    background-color: $uni-color-primary;
+    height: 50rpx;
+    font-size: 30rpx;
+    color: #FFFFFF;
+}

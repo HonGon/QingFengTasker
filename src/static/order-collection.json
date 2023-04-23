@@ -12,7 +12,7 @@
             "volume": "小"
         },
         "note": "请尽快取件",
-        "endTime": "1682144252",
+        "endTimestamp": "1682144252",
         "reward": 1,
         "poster": {
             "uid": "1782996909",
@@ -44,7 +44,7 @@
             "volume": "大"
         },
         "note": "请尽快取件",
-        "endTime": "1682144352",
+        "endTimestamp": "1682144352",
         "reward": 3,
         "poster": {
             "uid": "1782996909",
@@ -77,7 +77,7 @@
             "volume": "大"
         },
         "note": "请尽快取件",
-        "endTime": "1682144352",
+        "endTimestamp": "1682144352",
         "reward": 2,
         "poster": {
             "uid": "1782996909",
@@ -111,7 +111,7 @@
             "volume": "小"
         },
         "note": "请尽快取件",
-        "endTime": "1682144352",
+        "endTimestamp": "1682144352",
         "reward": 1,
         "poster": {
             "uid": "1792996920",

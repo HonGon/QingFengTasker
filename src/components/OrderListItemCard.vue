@@ -177,11 +177,11 @@ function onClickOrderItem() {
 }
 
 //侦听器
-watch(() => props.order.endtime, () => {
+watch(() => props.order.endTimestamp, () => {
     //计算页面倒计时
-    let endTime = parseInt(props.order.endTime)
+    let endTimestamp = parseInt(props.order.endTimestamp)
     let nowTime = parseInt(Date.now() / 1000)
-    let difference = endTime - nowTime
+    let difference = endTimestamp - nowTime
     //console.log("时间差是", difference);
     if (difference > 0) {
         countDownSecond.value = difference
@@ -192,12 +192,12 @@ watch(() => props.order.endtime, () => {
 
 //挂载前
 onMounted(() => {
-    // console.log(props.order.endTime)
+    // console.log(props.order.endTimestamp)
 
     //计算页面倒计时
-    let endTime = parseInt(props.order.endTime)
+    let endTimestamp = parseInt(props.order.endTimestamp)
     let nowTime = parseInt(Date.now() / 1000)
-    let difference = endTime - nowTime
+    let difference = endTimestampstamp - nowTime
     //console.log("时间差是", difference);
     if (difference > 0) {
         countDownSecond.value = difference

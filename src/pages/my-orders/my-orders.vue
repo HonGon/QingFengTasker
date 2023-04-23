@@ -15,7 +15,7 @@
                 <view class="header-search-order-state">
                     <text class="header-search-order-state-text">筛选</text>
                     <uni-data-select class="header-search-order-state-selected" v-model="orderStateCondition"
-                        :localdata="orderStateConditionRange" @change="onorderStateConditionChange"></uni-data-select>
+                        :localdata="orderStateConditionRange" @change="onOrderStateConditionChange"></uni-data-select>
                 </view>
             </view>
         </view>
@@ -24,7 +24,7 @@
         <!-- 订单列表 -->
         <view class="order-list">
 
-            <template v-for="order in orderListFilter">
+            <template v-for="order in orderListFilter" :key="order.id">
                 <OrderListItemCard :order="order" @clickOrderItem="checkOrderDetail" :buttonTypeIndex="2">
                 </OrderListItemCard>
             </template>
@@ -123,7 +123,7 @@ function onSegmentChange(e) {
 }
 
 //处理筛选条件变化事件
-function onorderStateConditionChange(e) {
+function onOrderStateConditionChange(e) {
     console.log("当前订单状态筛选条件标签", e)
 }
 

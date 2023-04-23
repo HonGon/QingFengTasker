@@ -1,0 +1,376 @@
+<template>
+    <scroll-view class="content" :scroll-y="true" :enable-flex="true">
+        <uni-section title="发布委托" type="square" titleFontSize="39rpx">
+			<uni-list>
+                <uni-list-item title="委托类型："/>
+                <view class="task-type select">
+                    <uni-data-select
+                        v-model="order.type"
+                        :localdata="orderTypeRange"
+                        placeholder="请选择委托类型"   
+                    ></uni-data-select>
+                </view>
+
+                <uni-list-item title="委托内容："/>
+                <view class="order-content">
+                    <uni-easyinput v-model="order.content" @focus="onContentFocus" @change="onContentChange" type="textarea" auto-height class="order-content-textarea"  placeholder="请输入委托内容"></uni-easyinput>
+                </view>
+                <template v-if="showContentErrMsg">
+                    <view class="order-content-error error">
+                        <text >{{ contentErrMsg }}</text>
+                    </view>
+                </template>
+                
+
+
+                <uni-list-item title="起点地址：" />
+                <view class="start-address address">
+                    <input v-model="order.startAddress.name" placeholder="请选择起点地址" class="start-address-input address-input" type="text" disabled>
+                    <view  @click="onClickAddressButton(1)" class="start-address-select-button button">选择</view>
+                </view>
+                <template v-if="showStartAddressErrMsg">
+                    <view class="start-address-error error">
+                        <text >*请选择地址*</text>
+                    </view>
+                </template>
+                
+
+                <uni-list-item title="终点地址：" />
+                <view class="end-address address">
+                    <input v-model="order.endAddress.name" placeholder="请选择终点地址" class="end-address-input address-input" type="text" disabled>
+                    <view @click="onClickAddressButton(2)" class="start-address-select-button button">选择</view>
+                </view>
+                <template v-if="showEndAddressErrMsg">
+                    <view class="end-address-error error">
+                        <text >*请选择地址*</text>
+                    </view>
+                </template>
+                
+
+                <uni-list-item title="联系人：" > 
+                    <template v-slot:footer>
+                        <uni-easyinput v-model="order.poster.name" @focus="onPosterNameFocus" @change="onPosterNameChange" class="poster-name-input input-text" type="text" placeholder="请输入"></uni-easyinput>
+                    </template>
+                </uni-list-item> 
+                <template v-if="showPosterNameErrMsg">
+                    <view class="poster-name-error error">
+                        <text >{{ posterNameErrMsg }}</text>
+                    </view>
+                </template>
+                
+
+                <uni-list-item title="联系电话：" > 
+                    <template v-slot:footer>
+                        <uni-easyinput v-model="order.poster.phoneNumber" @focus="onPosterPhoneNumberFocus" @change="onPosterPhoneNumberChange" class="poster-phone-number-input input-text" type="text" placeholder="请输入"></uni-easyinput>
+                    </template>
+                </uni-list-item> 
+                <template v-if="showPosterPhoneNumberErrMsg">
+                    <view class="poster-phone-number-error error">
+                        <text >{{ posterPhoneNumberErrMsg }}</text>
+                    </view>
+                </template>
+
+                <uni-list-item title="委托报酬：" > 
+                    <template v-slot:footer>
+                        <view class="reward">
+                            <uni-number-box v-model="order.reward" :value="order.reward" :min="1" :step="0.5" background="#dd524d" color="#ffffff" />
+                            <text class="reward-unit">元</text>
+                        </view>
+                    </template>
+                </uni-list-item> 
+                <!-- <view class="task-note-error error">
+                    <text >*请输入委托报酬*</text>
+                </view> -->
+
+                <uni-list-item title="" /> 
+
+                <uni-list-item title="物品信息："/>
+                <view class="related-object-info">
+                    <view class="related-object-info-weight">
+                        <text>重量:</text>
+                        <uni-number-box v-model="order.relatedOb.weight" :value="order.relatedOb.weight" :step="0.5" />
+                        <text>Kg</text>
+                    </view>
+
+                    <view class="related-object-info-volume">
+                        <text>体积:</text>
+                        <uni-data-select
+                        v-model="order.relatedOb.volume"
+                        :localdata="volumeTypeRange"
+                    ></uni-data-select>
+                    </view>
+                </view>
+
+                <uni-list-item title="截止时间：" >
+                    <template v-slot:footer>
+                        <view class="end-time">
+                            <template v-if="isLimitEndTime">
+                                <picker mode="time" :value="selectedTime" @change="onEndTimeChange">
+                                    <view class="end-time-text">{{ selectedTime }}</view>
+                                </picker>
+                            </template>
+                            <view class="end-time-button button" @click="onEndTimeButtonClick(isLimitEndTime)">{{ endTimeButtonText }}</view>
+                        </view>
+                    </template>
+                </uni-list-item>
+
+                <uni-list-item title="详细起点地址：" > 
+                    <template v-slot:footer>
+                        <uni-easyinput v-model="order.startAddressDetail" class="task-note-input input-text" type="text" placeholder="请输入（可选）"></uni-easyinput>
+                    </template>
+                </uni-list-item> 
+
+                <uni-list-item title="详细终点地址：" > 
+                    <template v-slot:footer>
+                        <uni-easyinput v-model="order.endAddressDetail" class="task-note-input input-text" type="text" placeholder="请输入（可选）"></uni-easyinput>
+                    </template>
+                </uni-list-item> 
+                
+                <uni-list-item title="备注：" > 
+                    <template v-slot:footer>
+                        <uni-easyinput v-model="order.note" class="task-note-input input-text" type="text" placeholder="请输入（可选）"></uni-easyinput>
+                    </template>
+                </uni-list-item> 
+                <!-- <view class="task-note-error error">
+                    <text >*请输入正确内容*</text>
+                </view> -->
+                
+                  
+				<uni-list-item title="附件" rightText="可选" />
+                <view class="file" style="padding:">
+                       <uni-file-picker limit="3" title="最多选择3张图片"></uni-file-picker>
+                </view>
+			</uni-list>
+		</uni-section>
+
+        <uni-popup ref="popup" type="bottom" :mask-click="false">
+            <view class="map-popup">
+                <MapWithMarkers :markers="markers" @chooseNewLocation="onChooseAddress" ></MapWithMarkers>
+            </view>
+        </uni-popup>
+
+    </scroll-view>
+    <BottomPanel :buttonIndexArray="bottomButtonIndexArray" @clickBottomButton="onPost"></BottomPanel>
+</template>
+
+<script setup>
+import { onLoad } from '@dcloudio/uni-app'
+import { ref } from 'vue'
+import { MapWithMarkers } from "../../components/MapWithMarkers.vue"
+import { BottomPanel } from "../../components/BottomPanel.vue"
+
+const order = ref({
+    type:1,
+    content:"",
+    startAddress: {
+        name: "",
+        longitude: 0,
+        latitude: 0
+    },
+    endAddress: {
+        name: "",
+        longitude: 0,
+        latitude: 0
+    },
+    poster:{
+        uid:"",
+        name:"",
+        phoneNumber:""
+    },
+    reward:1,
+    relatedOb: {
+        weight: 0,
+        volume: ""
+    },
+    endTimestamp: "0",
+    startAddressDetail:"",
+    endAddressDetail:"",
+    note:"",
+    attachmentList:[]
+})
+
+//委托内容下拉框数据
+const orderTypeRange = ref([
+    { value: 1, text: "帮取快递" },
+    { value: 2, text: "帮寄快递" },
+    { value: 3, text: "帮取外卖" },
+    { value: 4, text: "帮送文件" },
+    { value: 5, text: "其他" },
+])
+
+//物品体积下拉框数据
+const volumeTypeRange = ref([
+        { value: 1, text: "小" },
+        { value: 2, text: "中" },
+        { value: 3, text: "大" },
+        { value: 4, text: "超大" },
+      ])
+
+const selectedTime = ref("12:00")               //时间选择器选中的时间    
+const isLimitEndTime = ref(false)               //是否限定了截止时间
+const endTimeButtonText = ref("限定时间")        //截止时间按钮显示的文本，限定还是不限定
+const isChooseStartAddress = ref(true)
+
+const markers = ref([])                             //传入地图组件的标记点
+const bottomButtonIndexArray = ref([0,0,1,0,1])     //控制底部面板组件显示按钮的数组
+const popup = ref(null)                             //模板引用uni.popup
+
+const showContentErrMsg = ref(true)
+const contentErrMsg = ref("* 委托内容不能为空！*")
+const showPosterNameErrMsg = ref(true)
+const posterNameErrMsg = ref("* 联系人内容不能为空！*")
+const showPosterPhoneNumberErrMsg = ref(true)
+const posterPhoneNumberErrMsg = ref("* 联系电话不能为空！*")
+const showStartAddressErrMsg = ref(true)
+const showEndAddressErrMsg = ref (true)
+
+//方法
+//处理点击选择起始地址按钮事件
+function onClickAddressButton(e) {
+    console.log(e)
+    if(e === 1){
+        isChooseStartAddress.value = true
+    }else{
+        isChooseStartAddress.value = false
+    }
+    popup.value.open("center")      //弹出地图组件
+}
+
+//处理在地图上选择地址事件
+function onChooseAddress(e) {
+    if(isChooseStartAddress.value){
+        order.value.startAddress = e
+        showStartAddressErrMsg.value = false
+    }else{
+        order.value.endAddress = e
+        showEndAddressErrMsg.value = false
+    }
+    popup.value.close()             //关闭地图组件
+}
+
+//设置委托截止时间
+function setEndTimestamp(time){
+    let hhmm = time.split(":")        //将选中的时间与当前日期进行结合，最后转为时间戳
+    let currentTime = new Date()
+
+    let hh = currentTime.getHours()
+    let mm = currentTime.getMinutes()
+
+    //处理当前为23点50分及其以后的边界情况
+    if( (hh == 23 && mm >= 50 ) && hhmm[0] == "00"){
+        currentTime.setDate(currentTime.getDate() + 1)
+    }
+    currentTime.setHours(hhmm[0])
+    currentTime.setMinutes(hhmm[1])
+    currentTime.setSeconds(0)
+    order.value.endTimestamp = (parseInt(currentTime.getTime() / 1000 )).toString()
+    console.log( order.value.endTimestamp)
+}
+
+//处理截止时间按钮的点击事件
+function onEndTimeButtonClick(e){
+    // console.log("当前是否显示选择时间按钮",e);
+    isLimitEndTime.value = !e
+    endTimeButtonText.value = isLimitEndTime.value ? "不限定时间":"限定时间"
+    if(!isLimitEndTime.value){
+        order.value.endTimestamp = "0"
+    } else {
+        setEndTimestamp(selectedTime.value)
+    }
+}
+
+//处理截止时间选择事件
+function onEndTimeChange(e) {
+    // console.log(e);
+    selectedTime.value = e.detail.value         //选中的时间动态显示在页面
+    setEndTimestamp(selectedTime.value)         //设置截止时间
+}
+
+//处理点击发布按钮事件
+function onPost(e) {
+    if(e === 5){
+        console.log("点击了底部的发布按钮")
+        console.log(order.value)
+    }
+    if(e === 3){
+        console.log("点击了底部的返回按钮")
+    }
+}
+
+//处理内容输入框失去焦点事件
+function onContentChange() {
+    let c = order.value.content
+    if(c === ""){
+        contentErrMsg.value = "* 委托内容不能为空！*"
+        showContentErrMsg.value = true
+    }
+}
+//处理内容输入框聚焦事件
+function onContentFocus() {
+    showContentErrMsg.value = false
+}
+
+//处理联系人输入框失去焦点事件
+function onPosterNameChange() {
+    let n = order.value.poster.name
+    if(n === ""){
+        posterNameErrMsg.value = "* 联系人名称不能为空！*"
+        showPosterNameErrMsg.value = true
+    }
+}
+//处理联系人输入框聚焦事件
+function onPosterNameFocus() {
+    showPosterNameErrMsg.value = false
+}
+
+//处理联系人电话输入框失去焦点事件
+function onPosterPhoneNumberChange() {
+    let pn = order.value.poster.phoneNumber
+    if(pn === ""){
+        posterPhoneNumberErrMsg.value = "* 联系电话不能为空！*"
+        showPosterPhoneNumberErrMsg.value = true
+    }
+}
+//处理联系人电话输入框聚焦事件
+function onPosterPhoneNumberFocus() {
+    showPosterPhoneNumberErrMsg.value = false
+}
+
+
+
+onLoad( async () => {
+    //获取当前时间
+    let currentTime = new Date()
+    let hh = currentTime.getHours()
+    let mm = (currentTime.getMinutes() + 10)        //截止时间默认当前时间往后推迟10分钟
+    if( mm >= 60 ){
+        hh = hh + 1
+        mm = mm - 60
+    }
+    if( hh >= 24){
+        hh = 0
+    }
+
+    hh = hh < 10 ? "0"+hh.toString() : hh.toString()
+    mm = mm < 10 ? "0"+mm.toString() : mm.toString()
+
+    //设置当前选择的截止时间
+    selectedTime.value = hh + ":" + mm
+
+    let centerLocation = {
+        name: "广东工业大学龙洞校区食堂",
+        longitude: 113.358029,
+        latitude: 23.197092
+    }
+    //从全局变量中获取到地图中心信息
+    uni.setStorageSync("centerLocation", centerLocation)
+
+    let result = await import("../../static/preset-locations.json")
+    markers.value = result.default
+})
+
+</script>
+
+<style lang="scss" scoped>
+@import "./post-task.scss";
+</style>

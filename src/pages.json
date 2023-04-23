@@ -30,6 +30,12 @@
 			"style": {
 				"navigationBarTitleText": "订单详情"
 			}
+		},
+		{
+			"path": "pages/post-task/post-task",
+			"style": {
+				"navigationBarTitleText": "发布委托"
+			}
 		}
 
 	],
