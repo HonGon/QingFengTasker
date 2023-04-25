@@ -30,6 +30,10 @@ const props = defineProps({
         type: Array,
         required: true
     },
+    centerLocation:{
+        type:Object,
+        required:true
+    }
 })
 
 

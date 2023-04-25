@@ -29,19 +29,17 @@ $order-list-item-font-size: 28rpx;
         justify-content: center;
         background-color: $color-white;
         width: 750rpx;
-
         &-bar {
-            width: 450rpx;
+            width: 400rpx;
         }
-
-        &-order-state {
+        &-order-type {
             display: flex;
             justify-content: space-around;
             align-items: center;
-            width: 250rpx;
+            width: 300rpx;
 
             &-selected {
-                width: 150rpx;
+                width: 200rpx;
             }
         }
     }

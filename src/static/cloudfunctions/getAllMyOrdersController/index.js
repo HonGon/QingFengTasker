@@ -1,0 +1,34 @@
+// 云函数入口文件
+const cloud = require('wx-server-sdk')
+
+cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV }) // 使用当前云环境
+
+// 云函数入口函数
+exports.main = async (event, context) => {
+  let uid = event.uid
+
+  let result = {
+    orders:{},
+    errMsg:{
+      fromDao:{},
+      fromService:{},
+      fromController:{}
+    }
+  }
+
+  await cloud.callFunction({
+    name:"getAllMyOrdersService",
+    data:{
+      uid:uid
+    }
+  }).then(res =>{
+    console.log("调用Service层结果", res)
+    result.orders = res.result.orders
+    result.errMsg.fromDao = res.result.errMsg.fromDao
+    result.errMsg.fromService = res.result.errMsg.fromService
+  }).catch(err =>{
+    result.errMsg.fromController = err
+  })
+  console.log("返回的Controller层结果", result)
+  return result
+}

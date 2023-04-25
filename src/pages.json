@@ -36,6 +36,18 @@
 			"style": {
 				"navigationBarTitleText": "发布委托"
 			}
+		},
+		{
+			"path": "pages/take-task/take-task",
+			"style": {
+				"navigationBarTitleText": "承接委托"
+			}
+		},
+		{
+			"path": "pages/test/test",
+			"style": {
+				"navigationBarTitleText": "云函数测试"
+			}
 		}
 
 	],
@@ -44,7 +56,8 @@
 		"navigationBarTitleText": "uni-app",
 		"navigationBarBackgroundColor": "#F8F8F8",
 		"backgroundColor": "#F8F8F8"
-	},"tabBar": {
+	},
+	"tabBar": {
 		"color": "#7A7E83",
 		"selectedColor": "#007aff",
 		"borderStyle": "black",

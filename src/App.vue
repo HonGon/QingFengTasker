@@ -1,9 +1,9 @@
 <script>
 export default {
   onLaunch: function () {
-    // wx.cloud.init({
-    //   env: 'qingfeng-cloud-9gx22hwbf0c875de'
-    // })
+    wx.cloud.init({
+      env: 'qingfeng-cloud-9gx22hwbf0c875de'
+    })
     console.log('App Launch')
   },
   onShow: function () {

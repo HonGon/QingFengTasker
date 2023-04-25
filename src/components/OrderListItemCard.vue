@@ -36,7 +36,7 @@
                     <text class="order-list-item-body-row-type">起始地址：</text>
                 </uni-col>
                 <uni-col :span="16" :push="2">
-                    <text class="order-list-item-body-row-start-address">{{ order.startAddress }}</text>
+                    <text class="order-list-item-body-row-start-address">{{ order.startAddress.name }}</text>
                 </uni-col>
             </uni-row>
             <!-- 终点地址 -->
@@ -45,7 +45,7 @@
                     <text class="order-list-item-body-row-type">终点地址：</text>
                 </uni-col>
                 <uni-col :span="16" :push="2">
-                    <text class="order-list-item-body-row-end-address">{{ order.endAddress }}</text>
+                    <text class="order-list-item-body-row-end-address">{{ order.endAddress.name }}</text>
                 </uni-col>
             </uni-row>
             <!-- 物品简略信息 -->
@@ -54,13 +54,13 @@
                     <text class="order-list-item-body-row-type">物体重量：</text>
                 </uni-col>
                 <uni-col :span="16" :push="2">
-                    <text class="order-list-item-body-row-object-weight">{{ order.releatedOb.weight }}</text>
+                    <text class="order-list-item-body-row-object-weight">{{ order.relatedOb.weight }}</text>
                 </uni-col>
                 <uni-col :span="6">
                     <text class="order-list-item-body-row-type"> 物体体积：</text>
                 </uni-col>
                 <uni-col :span="16" :push="2">
-                    <text class="order-list-item-body-row-object-volume">{{ order.releatedOb.volume }}</text>
+                    <text class="order-list-item-body-row-object-volume">{{ order.relatedOb.volume }}</text>
                 </uni-col>
             </uni-row>
             <!-- 备注 -->
@@ -117,7 +117,7 @@ import { ref, computed, watch } from 'vue';
 // const stateType = ref("")
 
 const orderTypeRange = ref(["帮取快递", "帮寄快递", "帮取外卖", "帮送文件", "其他委托"])
-const stateTypeRange = ref(["待接取", "执行中", "未付款", "已完成"])
+const stateTypeRange = ref(["待接取", "执行中", "未付款", "已完成","已取消"])
 
 const showCountdown = ref(true)
 const countDownSecond = ref(0)
@@ -197,7 +197,7 @@ onMounted(() => {
     //计算页面倒计时
     let endTimestamp = parseInt(props.order.endTimestamp)
     let nowTime = parseInt(Date.now() / 1000)
-    let difference = endTimestampstamp - nowTime
+    let difference = endTimestamp - nowTime
     //console.log("时间差是", difference);
     if (difference > 0) {
         countDownSecond.value = difference

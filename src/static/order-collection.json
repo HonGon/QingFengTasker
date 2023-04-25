@@ -1,13 +1,13 @@
 [
     {
-        "id": "202304201681985555",
+        "id": "202304201681987755",
         "type": 1,
         "state": 1,
         "postTimestamp": "1682131166",
         "content": "去拿东北门拿外卖去拿东北门拿外卖去拿东北门拿外卖去拿东北门拿外卖",
         "startAddress": "东北门",
         "endAddress": "学生宿舍C栋",
-        "releatedOb": {
+        "relatedOb": {
             "weight": "0.5Kg",
             "volume": "小"
         },
@@ -20,7 +20,7 @@
             "phoneNumber": "18212227876"
         },
         "taker": {
-            "uid": "1792996920",
+            "uid": "20001682412497624",
             "name": "李先生",
             "phoneNumber": "1910367898",
             "latestPosition": ""
@@ -32,14 +32,14 @@
         "endAddressDetail": "C1-601B室"
     },
     {
-        "id": "202304201681985555",
+        "id": "202304201681988855",
         "type": 2,
         "state": 2,
         "postTimestamp": "1682132166",
         "content": "去图书馆楼下拿快递拿快递去图书馆楼下拿快递拿快递去图书馆楼下拿快递拿快递",
         "startAddress": "图书馆",
         "endAddress": "学生宿舍C栋",
-        "releatedOb": {
+        "relatedOb": {
             "weight": "1.5Kg",
             "volume": "大"
         },
@@ -52,7 +52,7 @@
             "phoneNumber": "18212227876"
         },
         "taker": {
-            "uid": "1792996920",
+            "uid": "20001682412497624",
             "name": "张先生",
             "phoneNumber": "1910367898",
             "latestPosition": ""
@@ -65,14 +65,14 @@
         "endAddressDetail": "C1-601B室"
     },
     {
-        "id": "202304201681985555",
+        "id": "202304201681985556",
         "type": 3,
         "state": 3,
         "postTimestamp": "1682132166",
         "content": "去拿东北门拿外卖去拿东北门拿外卖去拿东北门拿外卖去拿东北门拿外卖",
         "startAddress": "东北门",
         "endAddress": "学生宿舍C栋",
-        "releatedOb": {
+        "relatedOb": {
             "weight": "0.5Kg",
             "volume": "大"
         },
@@ -85,7 +85,7 @@
             "phoneNumber": "18212227876"
         },
         "taker": {
-            "uid": "1792996920",
+            "uid": "20001682412497624",
             "name": "张先生",
             "phoneNumber": "1910367898",
             "latestPosition": ""
@@ -99,14 +99,14 @@
         "endAddressDetail": "C1-601B室"
     },
     {
-        "id": "202304201681985555",
+        "id": "202304201681982355",
         "type": 4,
         "state": 4,
         "postTimestamp": "1682132166",
         "content": "去拿东北门拿外卖去拿东北门拿外卖去拿东北门拿外卖去拿东北门拿外卖",
         "startAddress": "东北门",
         "endAddress": "学生宿舍C栋",
-        "releatedOb": {
+        "relatedOb": {
             "weight": "0.5Kg",
             "volume": "小"
         },
@@ -114,7 +114,7 @@
         "endTimestamp": "1682144352",
         "reward": 1,
         "poster": {
-            "uid": "1792996920",
+            "uid": "20001682412497624",
             "name": "张先生",
             "phoneNumber": "1910367898"
         },
@@ -128,5 +128,62 @@
         ],
         "startAddressDetail": "东北门左边",
         "endAddressDetail": "C1-601B室"
+    },
+    {
+        "id": "202304201681985666",
+        "type": 4,
+        "state": 5,
+        "postTimestamp": "1682132166",
+        "content": "去拿东北门拿外卖去拿东北门拿外卖去拿东北门拿外卖去拿东北门拿外卖",
+        "startAddress": "东北门",
+        "endAddress": "学生宿舍C栋",
+        "relatedOb": {
+            "weight": "0.5Kg",
+            "volume": "小"
+        },
+        "note": "请尽快取件",
+        "endTimestamp": "1682144352",
+        "reward": 1,
+        "poster": {
+            "uid": "20001682412497624",
+            "name": "张先生",
+            "phoneNumber": "1910367898"
+        },
+        "taker": {
+            "uid": "1782996909",
+            "name": "韩先生",
+            "phoneNumber": "18212227876",
+            "latestPosition": ""
+        },
+        "attachmentList": [
+        ],
+        "startAddressDetail": "东北门左边",
+        "endAddressDetail": "C1-601B室"
+    },
+    {
+        "attachmentList": [],
+        "content": "取图书馆楼下拿快递",
+        "endAddress":{"name":"C区宿舍","longitude":113.357123,"latitude":23.197579},
+        "endAddressDetail": "C1-601B",
+        "endTimestamp": "1682144352",
+        "id": "16824066693781199",
+        "note": "",
+        "poster": {
+            "uid": "10001682389101999",
+            "name": "小韩",
+            "phoneNumber": "18218856473"
+        },
+        "relatedOb": {
+            "weight": 0.5,
+            "volume": 2
+        },
+        "reward": 2,
+        "startAddress":{"name":"菜鸟驿站","longitude":113.36115,"latitude":23.195524},
+        "startAddressDetail": "A货架",
+        "state": 1,
+        "taker": {
+            "uid": "20001682412497624"
+        },
+        "type": 1
     }
 ]

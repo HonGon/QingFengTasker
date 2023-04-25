@@ -3,19 +3,16 @@
 .notice {
     height: 445rpx;
     width: 750rpx;
-
     &-item {
         display: flex;
         flex-direction: row;
         justify-content: center;
         align-items: center;
-
         image {
             height: 100rpx;
             width: 100rpx;
         }
     }
-
 }
 
 .post-icon-form {

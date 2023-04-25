@@ -1,7 +1,7 @@
 <template>
     <view class="content">
         <view class="avatar">
-            <image class="avatar-image" src="../../static/logo.png"></image>
+            <image class="avatar-image" :src="avatarUrl"></image>
             <text class="avatar-nickname">闲人爱吃橘</text>
         </view>
 
@@ -31,6 +31,25 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
+import { onLoad, onShow } from '@dcloudio/uni-app';
+
+const avatarUrl = ref("")
+
+onLoad(async () => {
+    uni.login({
+        provider: 'weixin',
+        onlyAuthorize:true,	
+        scopes:"auth_user",
+        success: async (res) =>{
+            await uni.showToast({
+                title:"登录成功！",
+                duration: 3000
+            })
+            console.log(res)
+        }
+    })
+})
 
 </script>
 

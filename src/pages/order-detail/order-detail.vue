@@ -1,7 +1,7 @@
 <template>
     <scroll-view class="content" :scroll-y="true">
         <!-- 地图组件 -->
-        <MapWithMarkers v-if="showMap" :markers="markers" @chooseNewLocation="showLoc"></MapWithMarkers>
+        <MapWithMarkers v-if="showMap" :centerLocation="centerLocation" :markers="markers" @chooseNewLocation="showLoc"></MapWithMarkers>
         <!-- 订单项组件 -->
         <OrderListItemCard :order="order" :buttonTypeIndex="3"></OrderListItemCard>
         <!-- 发布者信息 -->
@@ -111,11 +111,17 @@
         <!-- 底部面板 -->
         <BottomPanel :buttonIndexArray="ButtonIndexArray" @clickBottomButton="onClickBottomButton"></BottomPanel>
     </scroll-view>
+
+    <uni-popup ref = "cancelDialogPopup" type="dialog">
+        <uni-popup-dialog type="error" cancelText="返回" confirmText="确认" title="修改订单" content="确认要取消订单吗？" 
+		@confirm="onCancelDialogConfirm"			></uni-popup-dialog>
+    </uni-popup>
+
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from "vue"
-import { onLoad } from "@dcloudio/uni-app";
+import { onLoad, onShow } from "@dcloudio/uni-app";
 import { MapWithMarkers } from "../../components/MapWithMarkers.vue"
 import { OrderListItemCard } from "../../components/OrderListItemCard.vue"
 import { BottomPanel } from "../../components/BottomPanel.vue"
@@ -123,13 +129,14 @@ import { BottomPanel } from "../../components/BottomPanel.vue"
 //响应式状态
 const scale = ref(16)               //地图缩放程度
 const markers = ref([])              //标记点集合
-const targetLocation = ref({
+const centerLocation = ref({
     name: "",
     longitude: 0,
     latitude: 0
 })
 const attachmentSrc = ref("")       //当前选中的附件
 const popup = ref(null)             //模板引用，引用uniapp的遮罩层
+const cancelDialogPopup = ref(null)
 // //附件列表
 // const attachmentList = ref([])
 
@@ -153,20 +160,18 @@ const showMap = computed( () => {
 //底部面板按钮控制
 const ButtonIndexArray = computed( () => {
     if (order.value.state === 1 ) {
-        return [1,1,1,0]
+        return [1,1,1,0,0]
     }else if (order.value.state === 3 ){
-        return [0,0,1,1]
+        return [0,0,1,1,0]
     }
-    return [0,0,1,0]
+    return [0,0,1,0,0]
 })
 
 
 //方法
 //处理点击图片事件
 function onClickImage(e) {
-    console.log(e)
     attachmentSrc.value = e
-    console.log(popup);
     popup.value.open('center')
 }
 
@@ -174,6 +179,7 @@ function onClickBottomButton(e) {
     // console.log("来自底部面板组件！", e)
     if (e === 1) {              //点击了取消订单按钮
         console.log("取消订单！")
+        cancelDialogPopup.value.open()
     } else if (e === 2) {       //点击了修改按钮
         console.log("修改订单！")
     } else if (e === 3) {       //点击了返回按钮
@@ -185,45 +191,85 @@ function onClickBottomButton(e) {
     }
 }
 
-//选择位置
-async function chooseLoc() {
-    uni.chooseLocation({
-        longitude: centerLocation.value.longitude,
-        latitude: centerLocation.value.latitude,
-        success: (res) => {
-            console.log(res);
-            centerLocation.value.longitude = res.longitude
-            centerLocation.value.latitude = res.latitude
-            console.log("选择后的经纬度", centerLocation.value.longitude, centerLocation.value.latitude);
-        },
-    });
+//处理取消订单点击事件
+function onCancelDialogConfirm () {
+    console.log("取消了订单！")
 }
 
-//获取用户位置
-async function getLoc() {
-    uni.getLocation({
-        type: "gcj02",
-        success: (res) => {
-            centerLocation.value.longitude = res.longitude
-            centerLocation.value.latitude = res.latitude
-            console.log("当前所处位置", "经度", res.longitude, "纬度", res.latitude);
+onShow(async () => {
+    //从全局变量中获取订单对象
+    let orderId = uni.getStorageSync("orderDetail").id
+
+    //调用后端云函数
+    await wx.cloud.callFunction({
+        name: "getOrderDetailController",
+        data: {
+            id: orderId
         }
+    }).then(res => {
+        order.value = res.result.order
+        console.log("当前订单是", order.value)
     })
-}
 
-function showLoc(e) {
-    // console.log(e)
-    targetLocation.value = e
-}
+    //制作地图标记点
+    let locations = [order.value.startAddress, order.value.endAddress]
+    let locationMarkers = []
+    let markersIndex = 0
 
+    for (markersIndex = 0; markersIndex < locations.length; markersIndex++) {
+        locationMarkers.push({
+            id: markersIndex,
+            longitude: locations[markersIndex].longitude,
+            latitude: locations[markersIndex].latitude,
+            iconPath: "/static/image/location.png",
+            width: 20,
+            height: 20,
+            callout: {
+                content: locations[markersIndex].name,
+                color: "#ffffff",
+                fontSize: 15,
+                borderRadius: 5,
+                bgColor: "#007aff",
+                padding: 2,
+                display: "ALWAYS"
+            }
+        })
+    }
+    //如果订单是被人承接之后的状态，即不是待接取以及已取消的状态
+    //地图上显示骑手的坐标
+    if(order.value.state != 1 && order.value.state != 5 ){
+        markersIndex++
+        locationMarkers.push({
+            id: markersIndex,
+            longitude: order.value.taker.latestLongitude,
+            latitude: order.value.taker.latestLatitude,
+            iconPath: "/static/image/location.png",
+            width: 20,
+            height: 20,
+            callout: {
+                content:"承接人",
+                color: "#ffffff",
+                fontSize: 15,
+                borderRadius: 5,
+                bgColor: "#dd524d",
+                padding: 2,
+                display: "ALWAYS"
+            }
+        })
+    }
+    //将标记点传给地图组件
+    markers.value = locationMarkers
+    console.log("当前地图标点",markers.value)
+    //取订单起点、终点的中点作为地图中心
+    centerLocation.value = {
+        longitude: (order.value.startAddress.longitude + order.value.endAddress.longitude) / 2,
+        latitude:(order.value.startAddress.latitude + order.value.endAddress.latitude) / 2
+    }
+    uni.setStorageSync("centerLocation", centerLocation.value)
+
+})
 
 onLoad(async () => {
-    let centerLocation = {
-        name: "广东工业大学龙洞校区食堂",
-        longitude: 113.358029,
-        latitude: 23.197092
-    }
-    //从全局变量中获取到地图中心信息
     uni.setStorageSync("centerLocation", centerLocation)
 
 
@@ -266,14 +312,12 @@ onLoad(async () => {
     //     uni.setStorageSync("orderDetail",orderDetail)
 
     //从全局变量中获取订单对象
-    order.value = uni.getStorageSync("orderDetail")
+    // order.value = uni.getStorageSync("orderDetail")
     //console.log(order.value)
 
     //加载预设地图组件上的标记点
     let result = await import("../../static/preset-locations.json")
     markers.value = result.default
-    //chooseLoc()
-    //getLoc()
     //console.log(markers.value)
 
     //检查附件信息
