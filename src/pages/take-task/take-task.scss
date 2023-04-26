@@ -17,29 +17,26 @@ $order-list-item-font-size: 28rpx;
         justify-self: flex-start;
         width: 750rpx;
         background-color: $color-white;
-
+        padding-bottom: 10rpx;
         &-control {
             height: 200rpx;
             width: 750rpx;
         }
     }
 
-    &-search {
+    &-select {
         display: flex;
         justify-content: center;
+        border-top: 1rpx solid $color-deep-gray;
+        padding: 10rpx;
         background-color: $color-white;
-        width: 750rpx;
-        &-bar {
-            width: 400rpx;
-        }
         &-order-type {
             display: flex;
             justify-content: space-around;
             align-items: center;
-            width: 300rpx;
-
+            width: 400rpx;
             &-selected {
-                width: 200rpx;
+                width: 300rpx;
             }
         }
     }

@@ -1,138 +1,46 @@
-[
-    {
-        "id": 0,
-        "longitude": 113.358029,
-        "latitude": 23.197092,
-        "iconPath": "/static/image/location.png",
-        "width": 20,
-        "height": 20,
-        "callout": {
-            "content": "内区饭堂",
-            "color": "#ffffff",
-            "fontSize": 15,
-            "borderRadius": 5,
-            "bgColor": "#007aff",
-            "padding": 2,
-            "display": "ALWAYS"
-        }
-    },
-    {
-        "id": 1,
-        "longitude": 113.357624,
-        "latitude": 23.196556,
-        "iconPath": "/static/image/location.png",
-        "width": 20,
-        "height": 20,
-        "callout": {
-            "content": "A区宿舍",
-            "color": "#ffffff",
-            "fontSize": 15,
-            "borderRadius": 5,
-            "bgColor": "#007aff",
-            "padding": 2,
-            "display": "ALWAYS"
-        }
-    },
-    {
-        "id": 2,
-        "longitude": 113.356947,
-        "latitude": 23.196895,
-        "iconPath": "/static/image/location.png",
-        "width": 20,
-        "height": 20,
-        "callout": {
-            "content": "B区宿舍",
-            "color": "#ffffff",
-            "fontSize": 15,
-            "borderRadius": 5,
-            "bgColor": "#007aff",
-            "padding": 2,
-            "display": "ALWAYS"
-        }
-    },
-    {
-        "id": 3,
-        "longitude": 113.357123,
-        "latitude": 23.197579,
-        "iconPath": "/static/image/location.png",
-        "width": 20,
-        "height": 20,
-        "callout": {
-            "content": "C区宿舍",
-            "color": "#ffffff",
-            "fontSize": 15,
-            "borderRadius": 5,
-            "bgColor": "#007aff",
-            "padding": 2,
-            "display": "ALWAYS"
-        }
-    },
-    {
-        "id": 4,
-        "longitude": 113.36115,
-        "latitude": 23.195524,
-        "iconPath": "/static/image/location.png",
-        "width": 20,
-        "height": 20,
-        "callout": {
-            "content": "图书馆（菜鸟驿站）",
-            "color": "#ffffff",
-            "fontSize": 15,
-            "borderRadius": 5,
-            "bgColor": "#007aff",
-            "padding": 2,
-            "display": "ALWAYS"
-        }
-    },
-    {
-        "id": 5,
-        "longitude": 113.361545,
-        "latitude": 23.198927,
-        "iconPath": "/static/image/location.png",
-        "width": 20,
-        "height": 20,
-        "callout": {
-            "content": "东北门",
-            "color": "#ffffff",
-            "fontSize": 15,
-            "borderRadius": 5,
-            "bgColor": "#007aff",
-            "padding": 2,
-            "display": "ALWAYS"
-        }
-    },
-    {
-        "id": 6,
-        "longitude": 113.3596,
-        "latitude": 23.192838,
-        "iconPath": "/static/image/location.png",
-        "width": 20,
-        "height": 20,
-        "callout": {
-            "content": "后门",
-            "color": "#ffffff",
-            "fontSize": 15,
-            "borderRadius": 5,
-            "bgColor": "#007aff",
-            "padding": 2,
-            "display": "ALWAYS"
-        }
-    },
-    {
-        "id": 7,
-        "longitude": 113.357283,
-        "latitude": 23.194419,
-        "iconPath": "/static/image/location.png",
-        "width": 20,
-        "height": 20,
-        "callout": {
-            "content": "G区宿舍",
-            "color": "#ffffff",
-            "fontSize": 15,
-            "borderRadius": 5,
-            "bgColor": "#007aff",
-            "padding": 2,
-            "display": "ALWAYS"
-        }
-    }
-]
+{
+        "cid": "0001",
+        "name": "广东工业大学龙洞校区",
+        "presetLocations": [
+            {
+                "name": "内区饭堂",
+                "longitude": 113.358029,
+                "latitude": 23.197092
+            },
+            {
+                "name":"A区宿舍",
+                "longitude": 113.357624,
+                "latitude": 23.196556
+            },
+            {
+                "name":"B区宿舍",
+                "longitude": 113.356947,
+                "latitude": 23.196895
+            },
+            {
+                "name":"C区宿舍",
+                "longitude": 113.357123,
+                "latitude": 23.197579
+            },
+            {
+                "name": "G区宿舍",
+                "longitude": 113.357283,
+                "latitude": 23.194419
+            },
+            {
+                "name":"图书馆（菜鸟驿站）",
+                "longitude": 113.36115,
+                "latitude": 23.195524
+            },
+            {
+                "name":"东北门",
+                "longitude": 113.361545,
+                "latitude": 23.198927
+            },
+            {
+                "name":"后门",
+                "longitude": 113.3596,
+                "latitude": 23.192838
+            }
+        ]
+}

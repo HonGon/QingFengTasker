@@ -8,13 +8,10 @@
             </view>
 
             <!-- 搜索条以及筛选条件 -->
-            <view class="header-search">
-                <view class="header-search-bar">
-                    <uni-search-bar cancelButton="auto" placeholder="搜索" radius=10></uni-search-bar>
-                </view>
-                <view class="header-search-order-type">
-                    <text class="header-search-order-type-text">筛选</text>
-                    <uni-data-select class="header-search-order-type-selected" v-model="orderTypeCondition"
+            <view class="header-select">
+                <view class="header-select-order-type">
+                    <text class="header-select-order-type-text">筛选:</text>
+                    <uni-data-select class="header-select-order-type-selected" v-model="orderTypeCondition"
                         :localdata="orderTypeConditionRange" @change="onOrderTypeConditionChange"></uni-data-select>
                 </view>
             </view>
@@ -30,25 +27,24 @@
         </view>
 
         <!-- 加载更多还是没有更多 -->
-        <uni-load-more :status="loadMoreTasks"  :contentText="loadMoreContentText"></uni-load-more>
+        <uni-load-more :status="loadMoreTasks" :contentText="loadMoreContentText"></uni-load-more>
 
         <!-- 接下委托订单时的弹窗提示 -->
-        <uni-popup  type="dialog" ref="takeTaskDialog" >
-            <uni-popup-dialog type="error" 
-            cancelText="取消" confirmText="确认" 
-            title="承接委托订单" content="确认接下该委托订单吗？" 
-            @confirm="takeTaskDialogConfirm"
-		    ></uni-popup-dialog>
+        <uni-popup type="dialog" ref="takeTaskDialog">
+            <uni-popup-dialog type="error" cancelText="取消" confirmText="确认" title="承接委托订单" content="确认接下该委托订单吗？"
+                @confirm="takeTaskDialogConfirm"></uni-popup-dialog>
         </uni-popup>
     </scroll-view>
 </template>
 
 <script setup>
 import { ref } from 'vue'
-import { onLoad , onReachBottom } from "@dcloudio/uni-app"
+import { onLoad, onReachBottom } from "@dcloudio/uni-app"
 import { OrderListItemCard } from "../../components/OrderListItemCard.vue";
 import { BottomPanel } from "../../components/BottomPanel.vue";
 import { computed } from 'vue';
+import { _ } from 'lodash'
+
 
 //响应式状态
 const segIndex = ref(0)
@@ -71,29 +67,23 @@ const loadMoreContentText = ref({ //自定义加载更多组件的文本
     contentrefresh: "正在加载...",
     contentnomore: "没有更多委托订单了"
 })
-const takeTaskDialog  = ref(null)       //模板引用，获取弹窗提示的引用    
+const takeTaskDialog = ref(null)       //模板引用，获取弹窗提示的引用    
 
 //计算属性
 //是否还有更多委托订单数据可以展示
-const loadMoreTasks = computed( ()=> {
-    return orderCount.value < orderListFilter.value.length? "more" : "noMore"
+const loadMoreTasks = computed(() => {
+    return orderCount.value < orderListFilter.value.length ? "more" : "noMore"
 })
 
 //实际在页面显示的委托订单
-const orderListOnDisplay = computed( ()=> {
+const orderListOnDisplay = computed(() => {
     return orderListFilter.value.slice(0, orderCount.value)
 })
 
 //筛选将要展示的委托订单列表
 const orderListFilter = computed(() => {
-    let user = {
-        uid: "1782996909",
-        name: ""
-    }
-    uni.setStorageSync("currentUser", user)
-
     //从全局变量中获取当前的用户信息
-    let currentUser = uni.getStorageSync("currentUser")
+    let currentUser = uni.getStorageSync("logintUser")
     let resultList = orderList.value
     //根据委托订单类型进行筛选
     if (orderTypeCondition.value === 1) {
@@ -121,17 +111,76 @@ const orderListFilter = computed(() => {
     return resultList
 })
 
-//获取用户定位信息
+
+//调用后端云函数获取最新的委托订单
+async function getLatestOrders() {
+    //获取当前用户的uid
+    let latestOrders = []
+    let posterUid = uni.getStorageSync("loginUser").uid
+    await wx.cloud.callFunction({
+        name: "getLatestOrdersController",
+        data: {
+            posterUid: posterUid
+        }
+    }).then(res => {
+        latestOrders = res.result.orders
+        latestOrders = _.sortBy(latestOrders, (o) => {
+            return -o.postTimestamp
+        })
+    }).catch(err => {
+        console.log("出错了！", err)
+    })
+    return latestOrders
+}
+
+//从后端云函数获取附近的委托订单
 async function getUserNearbyTasks() {
-    await uni.getLocation({
-            type:"gcj02",
+    return new Promise((resovle, reject) => {
+        let latestLongitude = 0
+        let latestLatitude = 0
+        let cid = ""
+
+        uni.setStorageSync("campus", { cid: "0001" })
+        //从全局变量中获取到校区信息
+        cid = uni.getStorageSync("campus").cid
+
+        uni.getLocation({
+            type: "gcj02",
             success: (res) => {
-                console.log("当前经度是",res.longitude,"纬度是",res.latitude)
-                return {longitude:res.longitude,latitude:res.latitude}
+                // latestLongitude = res.longitude
+                latestLongitude = 113.361545
+                // latestLatitude = res.latitude
+                latestLatitude = 23.198927
+                console.log("当前经度是", latestLongitude, "纬度是", latestLatitude)
+                resovle({ latestLongitude, latestLatitude, cid })
+            },
+            fail: (err) => {
+                uni.showToast({
+                    icon: "err",
+                    title: "请打开位置开关",
+                    duration: 2000
+                })
             }
         })
-    return {}
+    }).then(async ({ latestLongitude, latestLatitude, cid }) => {
+        let resultList = []
+        await wx.cloud.callFunction({
+            name: "getNearbyOrdersController",
+            data: {
+                latestLongitude: latestLongitude,
+                latestLatitude: latestLatitude,
+                cid: cid
+            }
+        }).then(res => {
+            resultList = res.result.orders
+            // console.log("成功获取！",orderList.value)
+            return res.result.orders
+        })
+        // console.log("promise里的", resultList)
+        return resultList
+    })
 }
+
 
 //方法
 //处理分页标签变更事件
@@ -140,14 +189,24 @@ async function onSegmentChange(e) {
     if (segIndex.value != e.currentIndex) {
         segIndex.value = e.currentIndex;
     }
+    //重置页面一些状态
     orderTypeCondition.value = 0
     orderCount.value = 2
-    if (segIndex.value == 1){
+
+    if (segIndex.value == 0) {
+        //获取最新的订单
         uni.showLoading({
-            title: '加载中'
+            title: "加载中"
         })
+        orderList.value = await getLatestOrders()
+        uni.hideLoading()
+    } else {
         //获取用户附近的委托订单
-        await getUserNearbyTasks()
+        uni.showLoading({
+            title: '定位中,请稍等'
+        })
+        orderList.value = await getUserNearbyTasks()
+        console.log("附近的委托订单列表1111", orderList.value)
         uni.hideLoading()
     }
 }
@@ -166,31 +225,39 @@ function checkOrderDetail(e) {
 
 //处理接下委托订单弹窗确认事件
 function takeTaskDialogConfirm() {
-    console.log("接下该委托订单!",selectedOrder.value)
+    console.log("接下该委托订单!", selectedOrder.value)
 }
 
 
 //页面生命周期
 onLoad(async (option) => {
-    //获取委托订单列表
-    const result = await import("../../static/order-collection.json")
-    orderList.value = result.default
-    
-    console.log("页面参数为",option)
+    console.log("页面参数为", option)
     //从前一个页面获取当前页的分段标签
     segIndex.value = parseInt(option.segIndex)
 
-    if(segIndex.value == 1){
-        getUserNearbyTasks()
+    if (segIndex.value == 0) {
+        uni.showLoading({
+            title: "加载中"
+        })
+        orderList.value = await getLatestOrders()
+        console.log("最新的委托订单列表", orderList.value)
+        uni.hideLoading()
+    } else {
+        uni.showLoading({
+            title: '定位中,请稍等'
+        })
+        orderList.value = await getUserNearbyTasks()
+        console.log("附近的委托订单列表", orderList.value)
+        uni.hideLoading()
     }
 
 })
 
 //滑动到底部时
-onReachBottom( () => {
+onReachBottom(() => {
     //增加页面显示的委托订单数量，每次加2
     orderCount.value += 2
-    if(orderCount.value >= orderList.value.length){
+    if (orderCount.value >= orderList.value.length) {
         orderCount.value = orderList.value.length
     }
 })

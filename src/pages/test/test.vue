@@ -9,10 +9,15 @@
 import { ref } from 'vue'
 
 function onclickLOGO(){
+    let latestLongitude = 113.36115 
+    let latestLatitude =  23.195524
+
     wx.cloud.callFunction({
-        name:"getOrderDetailController",
+        name:"getNearbyOrdersController",
         data:{
-            id:"16824146178541955"
+            latestLongitude:  latestLongitude,
+            latestLatitude: latestLatitude,
+            cid:"0001"
         }
     }).then(res => {
          console.log("查询之后的结果",res.result)
