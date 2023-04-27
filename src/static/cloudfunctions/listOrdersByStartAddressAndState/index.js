@@ -18,16 +18,17 @@ exports.main = async (event, context) => {
     }
   }
   console.log('传入的起点地址是', startAddress)
+  console.log('传入的订单状态', state)
 
   await db.collection("order").where(_.and([
     { 
       startAddress: {
-        longitude: _.eq(startAddress.longitude),
-        latitude : _.eq(startAddress.latitude) 
+        longitude: startAddress.longitude,
+        latitude : startAddress.latitude
       }
     },
     {
-      state:_.eq(state)
+      state: state
     }
   ])
   ).get().then( res =>{

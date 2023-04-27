@@ -11,6 +11,7 @@ exports.main = async (event, context) => {
     let latestLongitude = event.latestLongitude
     let latestLatitude = event.latestLatitude
     let cid = event.cid
+    let uid = event.uid
     //传出的参数
     let result = {
       orders: [],
@@ -112,10 +113,10 @@ exports.main = async (event, context) => {
       //定时循环的出口
       if (count == total) {
         clearInterval(interval)
-        resolve({ distanceMatrix, campus, result })
+        resolve({ distanceMatrix, campus, result, uid })
       }
     }, 1000)
-  }).then(async ({ distanceMatrix, campus, result }) => {
+  }).then(async ({ distanceMatrix, campus, result, uid }) => {
     //对得到的距离矩阵中的每个距离添加编号id，以便标识在排序之后的对应预设点的距离
     for (let i = 0; i < distanceMatrix.length; i++) {
       Object.defineProperty(distanceMatrix[i], "id", {
@@ -159,6 +160,10 @@ exports.main = async (event, context) => {
       }).catch(err => {
         result.errMsg.fromService = err
       })
+
+      //排除接单人自己发布的委托
+      result.orders = result.orders.filter( o => o.poster.uid != uid)
+
       console.log("返回的service的结果", result)
       return result
     }

@@ -13,7 +13,7 @@
                         <text class="order-list-item-head-state-detail">
                             {{ orderStateDetail }}
                         </text>
-                        <text class="order-list-item-head-state-date">{{ postTimeDetail }}</text>
+                        <text class="order-list-item-head-state-date">{{ TimeDetail }}</text>
                     </view>
                 </view>
             </uni-col>
@@ -21,54 +21,66 @@
 
         <!-- 订单项主体 -->
         <uni-row class="order-list-item-body">
+            <!-- 委托订单编号 -->
+            <uni-row>
+                <uni-col :span="8">
+                    <text class="order-list-item-body-row-type">订单编号：</text>
+                </uni-col>
+                <uni-col :span="14" :push="2">
+                    <text class="order-list-item-body-row-content">{{ order.id }}</text>
+                </uni-col>
+            </uni-row>
+
             <!-- 委托内容 -->
             <uni-row>
-                <uni-col :span="6">
+                <uni-col :span="8">
                     <text class="order-list-item-body-row-type">委托内容：</text>
                 </uni-col>
-                <uni-col :span="16" :push="2">
+                <uni-col :span="14" :push="2">
                     <text class="order-list-item-body-row-content">{{ order.content }}</text>
                 </uni-col>
             </uni-row>
             <!-- 起始地址 -->
             <uni-row>
-                <uni-col :span="6">
+                <uni-col :span="8">
                     <text class="order-list-item-body-row-type">起始地址：</text>
                 </uni-col>
-                <uni-col :span="16" :push="2">
+                <uni-col :span="14" :push="2">
                     <text class="order-list-item-body-row-start-address">{{ order.startAddress.name }}</text>
                 </uni-col>
             </uni-row>
             <!-- 终点地址 -->
             <uni-row>
-                <uni-col :span="6">
+                <uni-col :span="8">
                     <text class="order-list-item-body-row-type">终点地址：</text>
                 </uni-col>
-                <uni-col :span="16" :push="2">
+                <uni-col :span="14" :push="2">
                     <text class="order-list-item-body-row-end-address">{{ order.endAddress.name }}</text>
                 </uni-col>
             </uni-row>
             <!-- 物品简略信息 -->
             <uni-row>
-                <uni-col :span="6">
-                    <text class="order-list-item-body-row-type">物体重量：</text>
+                <uni-col :span="8">
+                    <text class="order-list-item-body-row-type">物体重量(Kg)：</text>
                 </uni-col>
-                <uni-col :span="16" :push="2">
+                <uni-col :span="14" :push="2">
                     <text class="order-list-item-body-row-object-weight">{{ order.relatedOb.weight }}</text>
                 </uni-col>
-                <uni-col :span="6">
+            </uni-row>
+            <uni-row>
+                <uni-col :span="8">
                     <text class="order-list-item-body-row-type"> 物体体积：</text>
                 </uni-col>
-                <uni-col :span="16" :push="2">
-                    <text class="order-list-item-body-row-object-volume">{{ order.relatedOb.volume }}</text>
+                <uni-col :span="14" :push="2">
+                    <text class="order-list-item-body-row-object-volume">{{ relatedObVolume }}</text>
                 </uni-col>
             </uni-row>
             <!-- 备注 -->
             <uni-row>
-                <uni-col :span="6">
+                <uni-col :span="8">
                     <text class="order-list-item-body-row-type">备注：</text>
                 </uni-col>
-                <uni-col :span="16" :push="2">
+                <uni-col :span="14" :push="2">
                     <text class="order-list-item-body-row-note">{{ order.note }}</text>
                 </uni-col>
             </uni-row>
@@ -93,7 +105,8 @@
                             <text class="order-list-item-footer-countdown-text">剩余时间：</text>
                             <view class="order-list-item-footer-countdown-detail">
                                 <uni-countdown v-if="showCountdown" color="#FFFFFF" background-color="#007AFF"
-                                    :font-size="13" :show-day="false" :second="countDownSecond"></uni-countdown>
+                                    :font-size="13" :show-day="false" :second="countDownSecond"
+                                    @timeup="onCountDownTimeup"></uni-countdown>
                                 <text v-else> 已过期</text>
                             </view>
                         </view>
@@ -109,6 +122,7 @@
 </template>
 
 <script setup>
+import { onShow } from '@dcloudio/uni-app';
 import { onMounted } from 'vue';
 import { ref, computed, watch } from 'vue';
 
@@ -117,10 +131,10 @@ import { ref, computed, watch } from 'vue';
 // const stateType = ref("")
 
 const orderTypeRange = ref(["帮取快递", "帮寄快递", "帮取外卖", "帮送文件", "其他委托"])
-const stateTypeRange = ref(["待接取", "执行中", "未付款", "已完成","已取消"])
+const stateTypeRange = ref(["待接取", "执行中", "未付款", "已完成", "已取消"])
 
 const showCountdown = ref(true)
-const countDownSecond = ref(0)
+const countDownSecond = ref(1000)
 const buttonTypeRange = ref(["接下", "查看"])
 
 //计算属性
@@ -146,6 +160,33 @@ const showButton = computed(() => {
     //如果父组件传来的按钮标号为3时，则卡片不显示按钮
     return !(props.buttonTypeIndex === 3)
 })
+const relatedObVolume = computed(() => {
+    //根据委托订单中的物品体积标号进行不同的显示
+    if (props.order.relatedOb.volume == 1) {
+        return "小"
+    } else if (props.order.relatedOb.volume == 2) {
+        return "中"
+    } else if (props.order.relatedOb.volume == 3) {
+        return "大"
+    } else if (props.order.relatedOb.volume == 4) {
+        return "超大"
+    }
+})
+
+const TimeDetail = computed(() => {
+    //卡片右上角显示的具体日期的会根据订单的状态变化而变化
+    if (props.order.state == 1) {
+        return timestampTodate(props.order.postTimestamp)
+    } else if (props.order.state == 2) {
+        return timestampTodate(props.order.takeTimestamp)
+    } else if (props.order.state == 3) {
+        return timestampTodate(props.order.finishTimestamp)
+    } else if (props.order.state == 4) {
+        return timestampTodate(props.order.payTimestamp)
+    } else if (props.order.state == 5) {
+        return timestampTodate(props.order.cancelTimestamp)
+    }
+})
 
 
 //Props
@@ -166,6 +207,18 @@ const emit = defineEmits({
 })
 
 //方法
+//日期转换
+function timestampTodate(timestamp) {
+    let date = new Date(parseInt(timestamp) * 1000)
+    return date.toLocaleDateString().replace(/\//g, "-") + " " + date.toTimeString().substr(0, 8);
+}
+
+//监听倒计时结束事件
+function onCountDownTimeup() {
+    showCountdown.value = false
+}
+
+
 //监听订单项卡片的点击事件
 function onClickOrderItem() {
     // let orderId = props.order.id
@@ -177,12 +230,13 @@ function onClickOrderItem() {
 }
 
 //侦听器
-watch(() => props.order.endTimestamp, () => {
+watch(props.order.endTimestamp, () => {
     //计算页面倒计时
     let endTimestamp = parseInt(props.order.endTimestamp)
+    console.log("结束时间", props.order.endTimestamp);
     let nowTime = parseInt(Date.now() / 1000)
     let difference = endTimestamp - nowTime
-    //console.log("时间差是", difference);
+    console.log("时间差是", difference);
     if (difference > 0) {
         countDownSecond.value = difference
     } else {
@@ -190,15 +244,29 @@ watch(() => props.order.endTimestamp, () => {
     }
 })
 
-//挂载前
-onMounted(() => {
-    // console.log(props.order.endTimestamp)
+// //每次出现
+// onShow(() => {
+//     // console.log(props.order.endTimestamp)
+//     //计算页面倒计时
+//     let endTimestamp = parseInt(props.order.endTimestamp)
+//     // console.log("结束时间", props.order.endTimestamp);
+//     let nowTime = parseInt(Date.now() / 1000)
+//     let difference = endTimestamp - nowTime
+//     // console.log("时间差是", difference);
+//     if (difference > 0) {
+//         countDownSecond.value = difference
+//     } else {
+//         showCountdown.value = false
+//     }
+// })
 
+onMounted(()=>{
     //计算页面倒计时
     let endTimestamp = parseInt(props.order.endTimestamp)
+    console.log("结束时间", props.order.endTimestamp);
     let nowTime = parseInt(Date.now() / 1000)
     let difference = endTimestamp - nowTime
-    //console.log("时间差是", difference);
+    console.log("时间差是", difference);
     if (difference > 0) {
         countDownSecond.value = difference
     } else {

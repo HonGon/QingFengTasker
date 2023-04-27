@@ -8,6 +8,7 @@ exports.main = async (event, context) => {
   let latestLongitude = event.latestLongitude
   let latestLatitude = event.latestLatitude
   let cid = event.cid
+  let uid = event.uid
 
   let result = {
     orders: [],
@@ -23,7 +24,8 @@ exports.main = async (event, context) => {
     data: {
       latestLongitude: latestLongitude,
       latestLatitude: latestLatitude,
-      cid: cid
+      cid: cid,
+      uid: uid
     }
   }).then(res => {
     console.log("调用service结果", res)

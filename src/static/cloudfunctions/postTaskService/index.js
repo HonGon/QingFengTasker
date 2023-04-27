@@ -31,6 +31,9 @@ exports.main = async (event, context) => {
     enumerable:true
   })
 
+  let postTimestamp = parseInt((new Date().getTime() / 1000)).toString()
+  order.postTimestamp = postTimestamp
+  
   // console.log("即将插入的订单为",order)
 
   await cloud.callFunction({

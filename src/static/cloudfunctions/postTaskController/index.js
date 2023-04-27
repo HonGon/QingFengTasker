@@ -13,6 +13,8 @@ exports.main = async (event, context) => {
     msg:""
   }
 
+  console.log("传入的order",order);
+
   //调用service层方法
   await cloud.callFunction({
     name:"postTaskService",

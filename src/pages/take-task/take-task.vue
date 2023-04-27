@@ -39,7 +39,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { onLoad, onReachBottom } from "@dcloudio/uni-app"
+import { onLoad, onReachBottom, onShow } from "@dcloudio/uni-app"
 import { OrderListItemCard } from "../../components/OrderListItemCard.vue";
 import { BottomPanel } from "../../components/BottomPanel.vue";
 import { computed } from 'vue';
@@ -130,6 +130,9 @@ async function getLatestOrders() {
     }).catch(err => {
         console.log("出错了！", err)
     })
+    latestOrders = latestOrders.filter((o) => {
+        return (parseInt(o.endTimestamp) - parseInt((new Date().getTime() / 1000))) > 0
+    })
     return latestOrders
 }
 
@@ -139,20 +142,25 @@ async function getUserNearbyTasks() {
         let latestLongitude = 0
         let latestLatitude = 0
         let cid = ""
+        let uid = ""
 
         uni.setStorageSync("campus", { cid: "0001" })
         //从全局变量中获取到校区信息
         cid = uni.getStorageSync("campus").cid
 
+        uni.setStorageSync("loginUser", { uid: "16824066693781199" })
+        //从全局变量中获取到校区信息
+        uid = uni.getStorageSync("campus").uid
+
         uni.getLocation({
             type: "gcj02",
             success: (res) => {
                 // latestLongitude = res.longitude
-                latestLongitude = 113.361545
+                latestLongitude = 113.36115
                 // latestLatitude = res.latitude
-                latestLatitude = 23.198927
+                latestLatitude = 23.195524
                 console.log("当前经度是", latestLongitude, "纬度是", latestLatitude)
-                resovle({ latestLongitude, latestLatitude, cid })
+                resovle({ latestLongitude, latestLatitude, cid, uid })
             },
             fail: (err) => {
                 uni.showToast({
@@ -162,14 +170,15 @@ async function getUserNearbyTasks() {
                 })
             }
         })
-    }).then(async ({ latestLongitude, latestLatitude, cid }) => {
+    }).then(async ({ latestLongitude, latestLatitude, cid, uid }) => {
         let resultList = []
         await wx.cloud.callFunction({
             name: "getNearbyOrdersController",
             data: {
                 latestLongitude: latestLongitude,
                 latestLatitude: latestLatitude,
-                cid: cid
+                cid: cid,
+                uid: uid
             }
         }).then(res => {
             resultList = res.result.orders
@@ -177,6 +186,9 @@ async function getUserNearbyTasks() {
             return res.result.orders
         })
         // console.log("promise里的", resultList)
+        resultList = resultList.filter( (o) => {
+            return (parseInt(o.endTimestamp) - parseInt((new Date().getTime() / 1000))) > 0
+        })
         return resultList
     })
 }
@@ -224,17 +236,83 @@ function checkOrderDetail(e) {
 }
 
 //处理接下委托订单弹窗确认事件
-function takeTaskDialogConfirm() {
+async function takeTaskDialogConfirm() {
+    //测试用
+    uni.setStorageSync("loginUser", {
+        uid: "20001682412497624",
+        name: "韩先生",
+        phoneNumber: "19102051696",
+    })
     console.log("接下该委托订单!", selectedOrder.value)
+
+    let _id = selectedOrder.value._id
+    //从全局变量中获取到登录的用户信息
+    let loginUser = uni.getStorageSync("loginUser")
+
+    //promis处理用户定位的异步操作
+    new Promise((resovle, reject) => {
+        let latestLongitude = 0
+        let latestLatitude = 0
+        uni.getLocation({
+            type: "gcj02",
+            success: (res) => {
+                console.log("定位成功！", res)
+                latestLongitude = res.longitude
+                latestLatitude = res.latitude
+                resovle({ latestLongitude, latestLatitude })
+            },
+            // fail:(err) => {
+            //     console.log("定位失败！",err)
+            //     reject(err)
+            // }
+        })
+    }).then(async ({ latestLongitude, latestLatitude }) => {
+        let taker = {
+            uid: loginUser.uid,
+            name: loginUser.name,
+            phoneNumber: loginUser.phoneNumber,
+            // latestLongitude: latestLongitude,
+            latestLongitude: 113.358029,
+            // latestLatitude: latestLatitude,
+            latestLatitude: 23.197092
+        }
+        await wx.cloud.callFunction({
+            name: "takeTaskController",
+            data: {
+                _id: _id,
+                taker: taker
+            }
+        }).then(res => {
+            //如果后端更新成功
+            console.log("请求后端的结果", res);
+            if (res.result.msg[0] == "更新成功" && res.result.msg[1] == "更新成功") {
+                //将接下的订单信息保存在全局变量中并传递给订单详情页面
+                uni.setStorageSync("orderDetail",selectedOrder.value)
+                uni.navigateTo({
+                    url:"/pages/order-detail/order-detail"
+                })
+                // uni.showToast({
+                //     title: "接下委托成功！",
+                //     duration: 2000
+                // })
+            } else {
+                uni.showToast({
+                    title: "请求出错！",
+                    duration: 2000
+                })
+            }
+        })
+    })
+    // .catch(err => {
+    //     uni.showToast({
+    //         icon:"error",
+    //         title: "请打开定位！"
+    //     })
+    // })
 }
 
-
-//页面生命周期
-onLoad(async (option) => {
-    console.log("页面参数为", option)
-    //从前一个页面获取当前页的分段标签
-    segIndex.value = parseInt(option.segIndex)
-
+//每次新进入页面都刷新数据
+async function freshOrderList() {
     if (segIndex.value == 0) {
         uni.showLoading({
             title: "加载中"
@@ -250,7 +328,18 @@ onLoad(async (option) => {
         console.log("附近的委托订单列表", orderList.value)
         uni.hideLoading()
     }
+}
 
+//页面生命周期
+onLoad(async (option) => {
+    console.log("页面参数为", option)
+    //从前一个页面获取当前页的分段标签
+    segIndex.value = parseInt(option.segIndex)
+    await freshOrderList()
+})
+
+onShow(async () => {
+    await freshOrderList()
 })
 
 //滑动到底部时
