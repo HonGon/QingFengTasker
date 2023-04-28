@@ -107,7 +107,8 @@
                                 <uni-countdown v-if="showCountdown" color="#FFFFFF" background-color="#007AFF"
                                     :font-size="13" :show-day="false" :second="countDownSecond"
                                     @timeup="onCountDownTimeup"></uni-countdown>
-                                <text v-else> 已过期</text>
+                                <text v-if="showExpired"> 已过期</text>
+                                <text v-if="showNoLimit"> 无限制</text>
                             </view>
                         </view>
 
@@ -133,7 +134,10 @@ import { ref, computed, watch } from 'vue';
 const orderTypeRange = ref(["帮取快递", "帮寄快递", "帮取外卖", "帮送文件", "其他委托"])
 const stateTypeRange = ref(["待接取", "执行中", "未付款", "已完成", "已取消"])
 
-const showCountdown = ref(true)
+const showNoLimit = ref(false)
+const showCountdown = ref(false)
+const showExpired = ref(false)
+
 const countDownSecond = ref(1000)
 const buttonTypeRange = ref(["接下", "查看"])
 
@@ -229,48 +233,46 @@ function onClickOrderItem() {
     emit("clickOrderItem", { targetOrder: props.order, buttonTypeIndex: props.buttonTypeIndex })
 }
 
-//侦听器
-watch(props.order.endTimestamp, () => {
-    //计算页面倒计时
-    let endTimestamp = parseInt(props.order.endTimestamp)
-    console.log("结束时间", props.order.endTimestamp);
+
+//计算时间差
+function calTimeDifference(timestamp) {
+    let endTimestamp = parseInt(timestamp)
     let nowTime = parseInt(Date.now() / 1000)
     let difference = endTimestamp - nowTime
-    console.log("时间差是", difference);
-    if (difference > 0) {
-        countDownSecond.value = difference
+    return difference
+}
+
+//侦听器
+watch(ref(props.order.endTimestamp), () => {
+    //传入的Timestamp每次改变时，计算页面倒计时
+    let timeDifference = calTimeDifference(props.order.endTimestamp)
+    if (timeDifference > 0) {
+        showCountdown.value = true
+        countDownSecond.value = timeDifference
     } else {
+        showExpired.value = true
+    }
+    if (props.order.endTimestamp = "0") {
         showCountdown.value = false
+        showExpired.value = false
+        showNoLimit.value = true
     }
 })
 
-// //每次出现
-// onShow(() => {
-//     // console.log(props.order.endTimestamp)
-//     //计算页面倒计时
-//     let endTimestamp = parseInt(props.order.endTimestamp)
-//     // console.log("结束时间", props.order.endTimestamp);
-//     let nowTime = parseInt(Date.now() / 1000)
-//     let difference = endTimestamp - nowTime
-//     // console.log("时间差是", difference);
-//     if (difference > 0) {
-//         countDownSecond.value = difference
-//     } else {
-//         showCountdown.value = false
-//     }
-// })
-
-onMounted(()=>{
+//挂载前执行一次
+onMounted(() => {
     //计算页面倒计时
-    let endTimestamp = parseInt(props.order.endTimestamp)
-    console.log("结束时间", props.order.endTimestamp);
-    let nowTime = parseInt(Date.now() / 1000)
-    let difference = endTimestamp - nowTime
-    console.log("时间差是", difference);
-    if (difference > 0) {
-        countDownSecond.value = difference
+    let timeDifference = calTimeDifference(props.order.endTimestamp)
+    if (timeDifference > 0) {
+        showCountdown.value = true
+        countDownSecond.value = timeDifference
     } else {
+        showExpired.value = true
+    }
+    if (props.order.endTimestamp == "0") {
         showCountdown.value = false
+        showExpired.value = false
+        showNoLimit.value = true
     }
 })
 </script>

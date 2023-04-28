@@ -5,6 +5,29 @@
         </MapWithMarkers>
         <!-- 订单项组件 -->
         <OrderListItemCard :order="order" :buttonTypeIndex="3"></OrderListItemCard>
+
+        <!-- 报酬信息 -->
+        <template v-if="showRewardInfo">
+            <uni-card title="报酬信息">
+                <uni-row>
+                    <uni-col :span="8">
+                        <text class="text">初始报酬(元)</text>
+                    </uni-col>
+                    <uni-col :span="10" :push="6">
+                        <text class="detail">{{ order.reward }}</text>
+                    </uni-col>
+                </uni-row>
+                <uni-row>
+                    <uni-col :span="8">
+                        <text class="text">最终报酬(元)</text>
+                    </uni-col>
+                    <uni-col :span="10" :push="6">
+                        <text class="detail">{{ order.finalReward }}</text>
+                    </uni-col>
+                </uni-row>
+            </uni-card>
+        </template>
+
         <!-- 发布者信息 -->
         <uni-card title="发布者信息">
             <uni-row>
@@ -12,7 +35,7 @@
                     <text class="text">
                         UID:</text>
                 </uni-col>
-                <uni-col :span="9" :push="11">
+                <uni-col :span="10" :push="10">
                     <text class="detail">{{ order.poster.uid }}</text>
                 </uni-col>
             </uni-row>
@@ -21,7 +44,7 @@
                 <uni-col :span="8">
                     <text class="text">称呼：</text>
                 </uni-col>
-                <uni-col :span="9" :push="7">
+                <uni-col :span="10" :push="6">
                     <text class="detail">{{ order.poster.name }}</text>
                 </uni-col>
             </uni-row>
@@ -30,7 +53,7 @@
                 <uni-col :span="8">
                     <text class="text">联系方式：</text>
                 </uni-col>
-                <uni-col :span="9" :push="7">
+                <uni-col :span="10" :push="6">
                     <text class="detail">{{ order.poster.phoneNumber }}</text>
                 </uni-col>
             </uni-row>
@@ -39,7 +62,7 @@
                 <uni-col :span="8">
                     <text class="text">详细起始地址：</text>
                 </uni-col>
-                <uni-col :span="9" :push="7">
+                <uni-col :span="10" :push="6">
                     <text class="detail">{{ order.startAddressDetail }}</text>
                 </uni-col>
             </uni-row>
@@ -48,7 +71,7 @@
                 <uni-col :span="8">
                     <text class="text">详细终点地址：</text>
                 </uni-col>
-                <uni-col :span="9" :push="7">
+                <uni-col :span="10" :push="6">
                     <text class="detail">{{ order.endAddressDetail }}</text>
                 </uni-col>
             </uni-row>
@@ -63,7 +86,7 @@
                         <text class="text">
                             UID:</text>
                     </uni-col>
-                    <uni-col :span="9" :push="11">
+                    <uni-col :span="10" :push="10">
                         <text class="detail">{{ order.taker.uid }}</text>
                     </uni-col>
                 </uni-row>
@@ -72,7 +95,7 @@
                     <uni-col :span="8">
                         <text class="text">称呼：</text>
                     </uni-col>
-                    <uni-col :span="9" :push="7">
+                    <uni-col :span="10" :push="6">
                         <text class="detail">{{ order.taker.name }}</text>
                     </uni-col>
                 </uni-row>
@@ -81,7 +104,7 @@
                     <uni-col :span="8">
                         <text class="text">联系方式：</text>
                     </uni-col>
-                    <uni-col :span="9" :push="7">
+                    <uni-col :span="10" :push="6">
                         <text class="detail">{{ order.taker.phoneNumber }}</text>
                     </uni-col>
                 </uni-row>
@@ -140,21 +163,25 @@ const finishDialogPopup = ref(null)
 
 const order = ref({})               //订单数据
 const imageList = ref([])           //附件列表
-
 //侦听器
-watch(imageList.value, ()=>{
-    console.log("图片列表改变了，现在的值是",imageList.value)
+watch(imageList.value, () => {
+    console.log("图片列表改变了，现在的值是", imageList.value)
 })
 
 
 //计算属性
+const showRewardInfo = computed(() => {
+    //如果订单状态是未付款或者是已完成，则显示订单报酬信息
+    return order.value.state == 3 || order.value.state == 4 ? true : false
+})
+
 const showAttachment = computed(() => {
     // 如果附件列表为空，则不显示附件
     return !(order.value.attachmentList.length == 0)
 })
 
 const showTakerInfo = computed(() => {
-    return order.value.state === 1 ? false : true
+    return order.value.state === 1 || order.value.state === 5 ? false : true
 })
 
 const showMap = computed(() => {
@@ -162,16 +189,24 @@ const showMap = computed(() => {
 })
 //底部面板按钮控制
 const ButtonIndexArray = computed(() => {
+    let logintUser = uni.getStorageSync("loginUser")
+    //如果订单是待接取状态
     if (order.value.state === 1) {
         return [1, 1, 1, 0, 0, 0]
-    } else if (order.value.state === 2) {
-        let logintUser = uni.getStorageSync("loginUser")
+    } else if (order.value.state === 2) {  //如果订单是待接取状态
+        //判断当前登录用户的身份
         if (logintUser.uid == order.value.poster.uid) {
             return [0, 0, 1, 1, 0, 0]
         } else if (logintUser.uid == order.value.taker.uid) {
             return [0, 0, 1, 0, 0, 1]
         }
-    } else if (order.value.state === 3) {
+    } else if (order.value.state === 3) {  //未付款
+        //判断当前登录用户的身份
+        if (logintUser.uid == order.value.poster.uid) {
+            return [0, 0, 1, 1, 0, 0]
+        } else if (logintUser.uid == order.value.taker.uid) {
+            return [0, 0, 1, 0, 0, 0]
+        }
         return [0, 0, 1, 1, 0, 0]
     }
     return [0, 0, 1, 0, 0, 0]
@@ -197,6 +232,7 @@ function onClickBottomButton(e) {
         console.log("返回！")
         uni.navigateBack()
     } else if (e === 4) {       //点击了支付按钮
+        payOrder()
         console.log("支付订单！")
     } else if (e === 6) {       //点击了支付按钮
         console.log("完成订单！")
@@ -204,14 +240,126 @@ function onClickBottomButton(e) {
     }
 }
 
+//支付模拟
+function payOrder() {
+    uni.showModal({
+        title: '微信支付',
+        content: `您需支付${order.value.finalReward}元`,
+        success: function (res) {
+            if (res.confirm) {
+                uni.showLoading({
+                    title: '支付中'
+                })
+                console.log('用户点击确定');
+                wx.cloud.callFunction({
+                    name: "payOrderController",
+                    data: {
+                        _id: order.value._id,
+                    }
+                }).then(res => {
+                    if (res.result.msg == "支付成功") {
+                        uni.hideLoading()
+                        uni.showToast({
+                            title: '支付成功！',
+                            duration: 2000
+                        })
+                        uni.redirectTo({
+                            url: '/pages/order-detail/order-detail'
+                        })
+                    } else {
+                        uni.hideLoading()
+                        uni.showToast({
+                            icon: 'error',
+                            title: '支付失败！',
+                            duration: 2000
+                        })
+                    }
+                }).catch(err => {
+                    uni.hideLoading()
+                    uni.showToast({
+                        icon: 'error',
+                        title: '出错！',
+                        duration: 2000
+                    })
+                })
+            } else if (res.cancel) {
+                console.log('用户点击取消');
+            }
+        }
+    })
+}
+
 //处理取消订单点击事件
 function onCancelDialogConfirm() {
     console.log("取消了订单！")
+    //获取当前委托订单的编号
+    let _id = order.value._id
+    wx.cloud.callFunction({
+        name: "cancelOrderController",
+        data: {
+            _id: _id
+        }
+    }).then(res => {
+        if (res.result.msg == "更新成功") {
+            uni.showToast({
+                icon: "success",
+                title: "取消订单成功！",
+                duration: 2000
+            })
+            //刷新页面
+            setTimeout(() => {
+                uni.redirectTo({
+                    url: "/pages/order-detail/order-detail"
+                })
+            }, 500)
+
+        } else {
+            uni.showToast({
+                icon: "error",
+                title: "出错！",
+                duration: 2000
+            })
+        }
+    }).catch(err => {
+        console.log("取消订单失败", err)
+        uni.showToast({
+            icon: "error",
+            title: "出错！",
+            duration: 2000
+        })
+    })
 }
 
 //处理完成订单点击事件
 function onFinishDialogConfirm() {
     console.log("完成了订单！")
+    wx.cloud.callFunction({
+        name: "finishOrderController",
+        data: {
+            id: order.value.id
+        }
+    }).then(res => {
+        if (res.result.msg == "提交成功") {
+            uni.showToast({
+                title: "提交完成成功！",
+            })
+            uni.redirectTo({
+                url: "/pages/order-detail/order-detail"
+            })
+        } else {
+            uni.showToast({
+                title: "出错！",
+                duration: 2000
+            })
+        }
+    }).catch(err => {
+        console.log("提交完成失败！", err)
+        uni.showToast({
+            title: "出错！",
+            duration: 2000
+        })
+    })
+
 }
 
 onLoad(async () => {
@@ -251,6 +399,7 @@ onLoad(async () => {
             }
         })
     }
+    console.log("当前选择的图片列表",imageList.value)
 
     //制作地图标记点
     let locations = [order.value.startAddress, order.value.endAddress]
@@ -311,8 +460,6 @@ onLoad(async () => {
 })
 
 onLoad(async () => {
-    uni.setStorageSync("centerLocation", centerLocation)
-    //console.log("附件信息", order.value.attachmentList);
 })
 </script>
 

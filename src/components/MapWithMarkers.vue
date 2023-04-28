@@ -1,9 +1,9 @@
 <template>
-        <view class="map-component">
-            <map :longitude="centerLocation.longitude" :latitude="centerLocation.latitude" :scale="scale" :markers="markers"
-                @markertap="onTapMarker" @callouttap="onTapMarker" @regionchange="onMapChange">
-            </map>
-        </view>
+    <view class="map-component">
+        <map :longitude="centerLocation.longitude" :latitude="centerLocation.latitude" :scale="scale" :markers="markers"
+            @markertap="onTapMarker" @callouttap="onTapMarker" @regionchange="onMapChange">
+        </map>
+    </view>
 </template>
 
 <script setup>
@@ -30,9 +30,9 @@ const props = defineProps({
         type: Array,
         required: true
     },
-    centerLocation:{
-        type:Object,
-        required:true
+    centerLocation: {
+        type: Object,
+        required: true
     }
 })
 
@@ -74,11 +74,13 @@ onMounted(() => {
 <style lang="scss" scoped>
 @import "../common/global.scss";
 @import "../uni.scss";
+
 .map-component {
     margin: $margin-block;
     background-color: $color-white;
     width: 700rpx;
-    > map {
+
+    >map {
         height: 400rpx;
         width: 720rpx;
     }

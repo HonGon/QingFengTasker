@@ -143,7 +143,7 @@
                     <text >*请输入正确内容*</text>
                 </view> -->
                 <uni-list-item title="附件" rightText="可选" />
-                <ImagePicker @imageChange="OnSelectedImageChange">
+                <ImagePicker @imageChange="onSelectedImageChange">
                 </ImagePicker>
             </uni-list>
         </uni-section>
@@ -191,6 +191,9 @@ const order = ref({
         name: "",
         phoneNumber: ""
     },
+    taker: {
+
+    },
     reward: 1,
     finalReward: 1,
     relatedOb: {
@@ -203,6 +206,8 @@ const order = ref({
     note: "",
     attachmentList: []
 })
+
+const imageList = ref([])
 
 //地图组件中心点
 const centerLocation = ref({
@@ -252,10 +257,10 @@ const showEndAddressErrMsg = ref(true)
 
 //方法
 //处理图片附件变化事件
-function OnSelectedImageChange(e) {
+function onSelectedImageChange(e) {
     console.log("来自图片选择器组件的事件", e.imageList)
-    order.value.attachmentList = e.imageList
-    console.log("当前附件列表信息", order.value.attachmentList)
+    imageList.value = e.imageList
+    console.log("当前附件列表信息", imageList.value)
 }
 
 
@@ -348,83 +353,36 @@ async function onPostDialogConfirm() {
         title: "发布委托中"
     })
     if (postDialogType.value === "success") {
-        let loginUser = {
-            uid: "20001682412497624",
-            name: "韩某人",
-            phoneNumber: "18218856473"
-        }
-        uni.setStorageSync("loginUser", loginUser)
-
         //获取当前登录用户的Uid
         let poster = uni.getStorageSync("loginUser")
         order.value.poster.uid = poster.uid
-        console.log(order.value)
+        console.log("发布委托,当前登录的用户UID", poster.uid)
 
 
         //处理用户上传的附件
-        if (order.value.attachmentList.length != 0) {
+        if (imageList.value.length != 0) {
             let fileName = ""
-            let attachmentListTemp = order.value.attachmentList
+            let attachmentListTemp = imageList.value
             let attachmentListTempNew = []
-            new Promise(async (resolve, reject) => {
-                console.log("还没有上传图片的", order.value)
-                for (let i = 0; i < attachmentListTemp.length; i++) {
-                    fileName = (attachmentListTemp[i].path).split('/')[3]
-                    new Promise(async (resolve, reject) => {
-                        wx.cloud.uploadFile({
-                            cloudPath: `order/${loginUser.uid}/${fileName}`, // 上传至云端的路径
-                            filePath: attachmentListTemp[i].path, // 小程序临时文件路径
-                            success: res => {
-                                // 返回文件 ID
-                                console.log("返回文件ID", res.fileID)
-                                resolve(res)
-                            }
-                        })
-                    }).then((res) => {
-                        attachmentListTempNew.push(res.fileID)
-                    })
-                }
-                resolve({ attachmentListTempNew })
-            }).then(async ({ attachmentListTempNew }) => {
-                order.value.attachmentList = attachmentListTempNew
-                console.log("刚刚上传完图片的", order.value)
-
-                setTimeout(async () => {
-                    await wx.cloud.callFunction({
-                        name: "postTaskController",
-                        data: {
-                            order: order.value
+            console.log("还没有上传图片的", order.value)
+            for (let i = 0; i < attachmentListTemp.length; i++) {
+                fileName = (attachmentListTemp[i].path).split('/')[3]
+                await new Promise(async (resolve, reject) => {
+                    wx.cloud.uploadFile({
+                        cloudPath: `order/${loginUser.uid}/${fileName}`, // 上传至云端的路径
+                        filePath: attachmentListTemp[i].path, // 小程序临时文件路径
+                        success: res => {
+                            // 返回文件 ID
+                            console.log("返回文件ID", res.fileID)
+                            resolve(res)
                         }
-                    }).then(res => {
-                        if (res.result.msg == "插入成功") {
-                            uni.hideLoading()
-                            console.log("请求后端结束后的", order.value)
-                            setTimeout(() => {
-                                //跳转至我的订单页面
-                                uni.switchTab({
-                                    url: "/pages/my-orders/my-orders"
-                                })
-                            }, 2100)
-                            uni.showToast({
-                                title: "发布委托成功！",
-                                duration: 2000
-                            })
-
-                        } else {
-                            uni.showToast({
-                                title: "出错了，请稍后再试",
-                                duration: 2000
-                            })
-                        }
-                    }).catch(err => {
-                        console.log(err)
-                        uni.showToast({
-                            title: "出错了，请稍后再试",
-                            duration: 2000
-                        })
                     })
-                }, 2500)
-            })
+                }).then((res) => {
+                    attachmentListTempNew.push(res.fileID)
+                })
+            }
+            order.value.attachmentList = attachmentListTempNew
+            console.log("刚刚上传完图片的", order.value)
         }
 
         //请求后端
@@ -461,8 +419,6 @@ async function onPostDialogConfirm() {
                 duration: 2000
             })
         })
-
-
     } else {
         console.log("请检查内容！")
     }
@@ -516,6 +472,14 @@ function onPosterPhoneNumberFocus() {
 }
 
 onLoad(async (option) => {
+    //测试登录
+    let loginUser = {
+        uid: "20001682412497624",
+        name: "韩某人",
+        phoneNumber: "18218856473"
+    }
+    uni.setStorageSync("loginUser", loginUser)
+
     //获取委托订单类型
     // console.log(option.orderType)
     order.value.type = parseInt(option.orderType)
@@ -543,13 +507,13 @@ onLoad(async (option) => {
         longitude: 113.358029,
         latitude: 23.197092
     }
-    //从全局变量中获取到地图中心信息
-    uni.setStorageSync("centerLocation", centerLocation)
-    centerLocation.value = uni.getStorageSync("centerLocation")
 
-
+    //导入的预设地址
     let result = await import("../../static/preset-locations.json")
     let presetLocations = result.default.presetLocations
+
+    //默认第一个导入的地址为地图的中心
+    centerLocation.value = presetLocations[0]
 
     //制作地图标记点
     let locations = presetLocations

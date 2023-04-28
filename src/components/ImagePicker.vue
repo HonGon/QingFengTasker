@@ -25,10 +25,10 @@ import { onMounted } from 'vue'
 import { computed, watch } from 'vue'
 import { ref } from 'vue'
 
-const imageList = ref([])
-const imageId = ref(0)
-const imageCount = ref(0)
-const showAddButton = ref(true)
+const imageList = ref([])           //图片列表
+const imageId = ref(0)              //图片的ID
+const imageCount = ref(0)           //当前选择图片的计数
+const showAddButton = ref(true)     //是否显示添加图片的图标
 
 //Props
 const props = defineProps({
@@ -112,6 +112,7 @@ onMounted(() => {
     box-shadow: 1rpx 1rpx 10rpx #b7b7b7;
     background-color: #ffffff;
     width: 630rpx;
+
     // background-color: #b7b7b7;
     &-item {
         &-delete-icon {

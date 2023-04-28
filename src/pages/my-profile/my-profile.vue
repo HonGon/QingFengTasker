@@ -39,11 +39,11 @@ const avatarUrl = ref("")
 onLoad(async () => {
     uni.login({
         provider: 'weixin',
-        onlyAuthorize:true,	
-        scopes:"auth_user",
-        success: async (res) =>{
+        onlyAuthorize: true,
+        scopes: "auth_user",
+        success: async (res) => {
             await uni.showToast({
-                title:"登录成功！",
+                title: "登录成功！",
                 duration: 3000
             })
             console.log(res)

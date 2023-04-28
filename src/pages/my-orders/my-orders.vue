@@ -10,7 +10,8 @@
             <!-- 搜索条以及筛选条件 -->
             <view class="header-search">
                 <view class="header-search-bar">
-                    <uni-search-bar cancelButton="auto" placeholder="搜索" radius=10></uni-search-bar>
+                    <uni-search-bar v-model="searchBarContent" cancelButton="auto" placeholder="搜索"
+                        radius=10></uni-search-bar>
                 </view>
                 <view class="header-search-order-state">
                     <text class="header-search-order-state-text">筛选</text>
@@ -30,18 +31,19 @@
             </template>
         </view>
 
-         <!-- 加载更多还是没有更多 -->
-    <uni-load-more :status="loadMoreOrders" :contentText="loadMoreContentText"></uni-load-more>
+        <!-- 加载更多还是没有更多 -->
+        <uni-load-more :status="loadMoreOrders" :contentText="loadMoreContentText"></uni-load-more>
 
     </scroll-view>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { onLoad, onReachBottom, onShow } from "@dcloudio/uni-app"
 import { OrderListItemCard } from "../../components/OrderListItemCard.vue";
 import { BottomPanel } from "../../components/BottomPanel.vue";
-import { computed } from 'vue';
+import { _ } from 'lodash'
+import { watch } from 'vue';
 
 //响应式状态
 const segIndex = ref(0)
@@ -58,6 +60,8 @@ const orderStateConditionRange = ref([
 const orderList = ref([])
 const orderCount = ref(2)           //页面初始显示的委托订单数量
 
+const searchBarContent = ref("")
+
 const loadMoreContentText = ref({ //自定义加载更多组件的文本
     contentdown: "上滑显示更多委托订单",
     contentrefresh: "正在加载...",
@@ -66,29 +70,35 @@ const loadMoreContentText = ref({ //自定义加载更多组件的文本
 
 //计算属性
 //是否还有更多委托订单数据可以展示
-const loadMoreOrders = computed( ()=> {
-    return orderCount.value < orderListFilter.value.length? "more" : "noMore"
+const loadMoreOrders = computed(() => {
+    return orderCount.value < orderListFilter.value.length ? "more" : "noMore"
 })
 
 //实际在页面显示的委托订单项
-const orderListOnDisplay = computed( ()=> {
+const orderListOnDisplay = computed(() => {
+    //如果搜索框不为空，则优先展示用户搜索的内容
+    if (searchBarContent.value !== "") {
+        return orderList.value.filter((o) => {
+            return o.content.indexOf(searchBarContent.value) != -1
+        })
+    }
     return orderListFilter.value.slice(0, orderCount.value)
 })
 
 //筛选将要展示的委托订单项
 const orderListFilter = computed(() => {
     //从全局变量中获取当前的用户信息
-    let currentUser = uni.getStorageSync("currentUser")
+    let loginUser = uni.getStorageSync("loginUser")
     let resultList = []
 
     //筛选是用户发布还是接下的委托订单
     if (segIndex.value === 0) {
         resultList = orderList.value.filter((order) => {
-            return order.poster.uid === currentUser.uid
+            return order.poster.uid === loginUser.uid
         })
     } else {
         resultList = orderList.value.filter((order) => {
-            return order.taker.uid === currentUser.uid
+            return order.taker.uid === loginUser.uid
         })
     }
     //根据委托订单状态进行筛选
@@ -114,6 +124,11 @@ const orderListFilter = computed(() => {
             return order.state === 5
         })
     }
+    //按照发布时间进行排序，最新的显示在最前面
+    resultList = _.sortBy(resultList, (o) => {
+        return -o.postTimestamp
+    })
+    console.log(resultList)
     return resultList
 })
 
@@ -169,26 +184,30 @@ onLoad(async () => {
     //获取委托委托订单列表
     // const result = await import("../../static/order-collection.json")
     // orderList.value = result.default
-    
-    let user = {
+
+    let loginUser = {
         uid: "20001682412497624",
-        name: ""
+        name: "韩某人",
+        phoneNumber: "19102051696"
     }
-    uni.setStorageSync("currentUser", user)
+    uni.setStorageSync("loginUser", loginUser)
+    console.log("我的订单，登录用户的UID", loginUser.uid)
 
 })
 
 // 页面每次出现时
-onShow(async ()=>{
+onShow(async () => {
+    let uid = uni.getStorageSync("loginUser").uid
+
     await wx.cloud.callFunction({
-        name:"getAllMyOrdersController",
-        data:{
-            uid:"20001682412497624"
+        name: "getAllMyOrdersController",
+        data: {
+            uid: uid
         }
     }).then(res => {
         console.log(res)
         let ordersFormDB = res.result.orders
-        console.log("我的全部订单",ordersFormDB)
+        console.log("我的全部订单", ordersFormDB)
         orderList.value = ordersFormDB
     }).catch(err => {
         console.log(err)
@@ -197,9 +216,9 @@ onShow(async ()=>{
 
 
 //页面滑到底部时
-onReachBottom( () => {
+onReachBottom(() => {
     orderCount.value += 2
-    if(orderCount.value >= orderListFilter.value.length){
+    if (orderCount.value >= orderListFilter.value.length) {
         orderCount.value = orderListFilter.value.length
     }
 })

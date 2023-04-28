@@ -67,15 +67,15 @@
 <script setup>
 import { ref } from 'vue'
 
-function onClickPostIcon(orderType){
+function onClickPostIcon(orderType) {
   uni.navigateTo({
-    url:"/pages/post-task/post-task?orderType=" + orderType
+    url: "/pages/post-task/post-task?orderType=" + orderType
   })
 }
 
-function onClickTakeIcon(segIndex){
+function onClickTakeIcon(segIndex) {
   uni.navigateTo({
-    url:"/pages/take-task/take-task?segIndex=" + segIndex
+    url: "/pages/take-task/take-task?segIndex=" + segIndex
   })
 }
 
