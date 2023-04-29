@@ -22,7 +22,7 @@
 		{
 			"path": "pages/my-profile/my-profile",
 			"style": {
-				"navigationBarTitleText": "个人资料"
+				"navigationBarTitleText": "我的"
 			}
 		},
 		{
@@ -47,6 +47,30 @@
 			"path": "pages/test/test",
 			"style": {
 				"navigationBarTitleText": "云函数测试"
+			}
+		},
+		{
+			"path": "pages/user-register/user-register",
+			"style": {
+				"navigationBarTitleText": "新用户注册"
+			}
+		},
+		{
+			"path": "pages/modify-order/modify-order",
+			"style": {
+				"navigationBarTitleText": "修改订单"
+			}
+		},
+		{
+			"path": "pages/profile-detail/profile-detail",
+			"style": {
+				"navigationBarTitleText": "我的资料"
+			}
+		},
+		{
+			"path": "pages/support/support",
+			"style": {
+				"navigationBarTitleText": "联系客服"
 			}
 		}
 

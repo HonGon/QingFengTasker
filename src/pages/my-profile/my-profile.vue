@@ -1,29 +1,24 @@
 <template>
     <view class="content">
         <view class="avatar">
-            <image class="avatar-image" :src="avatarUrl"></image>
-            <text class="avatar-nickname">闲人爱吃橘</text>
+            <image class="avatar-image" src="../../static/logo.png"></image>
+            <text class="avatar-nickname">{{ userName }}</text>
         </view>
 
         <view class="list">
-            <view class="list-item">
+            <view class="list-item" @click="onClickProfileDetail">
                 <uni-icons type="person" size="30"></uni-icons>
                 <text class="list-item-text">基本信息</text>
                 <uni-icons type="forward" size="30"></uni-icons>
             </view>
-            <view class="list-item">
-                <uni-icons type="location" size="30"></uni-icons>
-                <text class="list-item-text">我的地址</text>
-                <uni-icons type="forward" size="30"></uni-icons>
-            </view>
-            <view class="list-item">
+            <view class="list-item" @click="onClickSupport">
                 <uni-icons type="headphones" size="30"></uni-icons>
                 <text class="list-item-text">联系客服</text>
                 <uni-icons type="forward" size="30"></uni-icons>
             </view>
             <view class="list-item">
                 <uni-icons type="help" size="30"></uni-icons>
-                <text class="list-item-text">关于青峰跑腿</text>
+                <text class="list-item-text">关于青蜂跑腿</text>
                 <uni-icons type="forward" size="30"></uni-icons>
             </view>
         </view>
@@ -33,22 +28,27 @@
 <script setup>
 import { ref } from 'vue'
 import { onLoad, onShow } from '@dcloudio/uni-app';
+import { useLoginUserStore } from '../../store/modules/loginUserStore'
 
-const avatarUrl = ref("")
+const loginUserStore = useLoginUserStore()
 
-onLoad(async () => {
-    uni.login({
-        provider: 'weixin',
-        onlyAuthorize: true,
-        scopes: "auth_user",
-        success: async (res) => {
-            await uni.showToast({
-                title: "登录成功！",
-                duration: 3000
-            })
-            console.log(res)
-        }
+const userName = ref("")
+
+function onClickProfileDetail(){
+    uni.navigateTo({
+        url:'/pages/profile-detail/profile-detail'
     })
+}
+
+function onClickSupport(){
+    uni.navigateTo({
+        url:'/pages/support/support'
+    })
+}
+
+onLoad(() => {
+    console.log("进入了我的页面")
+    userName.value = loginUserStore.user.name
 })
 
 </script>

@@ -65,7 +65,7 @@ function addimage() {
         success: function (res) {
             // console.log("选中的图片信息", res.tempFilePaths);
             imageList.value.push({
-                id: imageId.value++,
+                id: Math.floor((new Date().getTime())).toString(),
                 path: res.tempFilePaths[0]
             })
             imageCount.value = imageCount.value + 1
@@ -97,6 +97,8 @@ function checkImage(e) {
 
 onMounted(() => {
     imageList.value = props.imageList
+    imageCount.value = props.imageList.length
+    console.log('当前图片选择器选择的图片个数',imageCount.value)
 })
 
 </script>

@@ -2,19 +2,15 @@
   <view class="content">
     <!--公告轮播图-->
     <swiper class="notice" circular indicator-dots="true" duration="500">
-      <swiper-item class="notice-item">
-        <image src="../../static/image/index.png"></image>
-      </swiper-item>
+      <template v-for=" notice in noticeList" :key="notice.nid">
+        <swiper-item class="notice-item">
+          <!-- <image src="../../static/image/index.png"></image> -->
+          <uni-card :title="notice.title" :extra="notice.date">
+            <text class="uni-body">{{ notice.content }}</text>
+          </uni-card>
 
-      <swiper-item class="notice-item">
-        <image src="../../static/logo.png"></image>
-      </swiper-item>
-
-      <swiper-item class="notice-item">
-        <image src="../../static/image/my-orders.png"></image>
-      </swiper-item>
-
-
+        </swiper-item>
+      </template>
     </swiper>
     <!--功能区-->
     <view class="post-icon-form">
@@ -65,7 +61,33 @@
 </template>
 
 <script setup>
+import { onLoad } from '@dcloudio/uni-app'
 import { ref } from 'vue'
+import { useLoginUserStore } from '../../store/modules/loginUserStore'
+
+//登录用户全局变量
+const loginUserStore = useLoginUserStore()
+
+//公告列表
+const noticeList = ref([
+  {
+    nid: '001',
+    title: '一月最新通告',
+    date: '2023年01月28日',
+    content: '四月最新通告四月最新通告四月最新通告'
+  },
+  {
+    nid: '002',
+    title: '二月最新通告',
+    date: '2023年02月25日',
+    content: '二月最新通告二月最新通告二月最新通告二月最新通告二月最新通告二月最新通告'
+  }, {
+    nid: '003',
+    title: '三月最新通告',
+    date: '2023年03月06日',
+    content: '三月最新通告三月最新通告三月最新通告三月最新通告三月最新通告三月最新通告三月最新通告三月最新通告三月最新通告三月最新通告三月最新通告三月最新通告'
+  }
+])
 
 function onClickPostIcon(orderType) {
   uni.navigateTo({
@@ -79,6 +101,39 @@ function onClickTakeIcon(segIndex) {
   })
 }
 
+onLoad(() => {
+  console.log('进入了首页！')
+  //用户静默登录
+  let openid = 'xyzxyz111122228888'  //韩某人
+  // let openid = 'abc123456789abc'  //小韩
+
+  uni.showLoading()
+  wx.cloud.callFunction({
+    name: "userLoginController",
+    data: {
+      openid: openid,
+    }
+  }).then(res => {
+    console.log("结果", res.result)
+    uni.hideLoading()
+    if (Object.keys(res.result.user).length != 0) {
+      //改变全局变量中的登录用户信息
+      loginUserStore.setLoginUser(res.result.user)
+      console.log('当前登录的用户UID是', loginUserStore.user.uid)
+      uni.showToast({
+        title: '登录成功！'
+      })
+    } else {
+      uni.hideLoading()
+      //跳转至注册页面
+      uni.redirectTo({
+        url: `/pages/user-register/user-register?openid=${openid}`
+      })
+    }
+  }).catch(err => {
+    console.log(err)
+  })
+})
 
 </script>
 

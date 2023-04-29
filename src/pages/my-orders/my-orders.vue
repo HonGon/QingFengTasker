@@ -44,6 +44,10 @@ import { OrderListItemCard } from "../../components/OrderListItemCard.vue";
 import { BottomPanel } from "../../components/BottomPanel.vue";
 import { _ } from 'lodash'
 import { watch } from 'vue';
+import { useLoginUserStore } from '../../store/modules/loginUserStore'
+
+const loginUserStore = useLoginUserStore()
+
 
 //响应式状态
 const segIndex = ref(0)
@@ -88,7 +92,7 @@ const orderListOnDisplay = computed(() => {
 //筛选将要展示的委托订单项
 const orderListFilter = computed(() => {
     //从全局变量中获取当前的用户信息
-    let loginUser = uni.getStorageSync("loginUser")
+    let loginUser = loginUserStore.user
     let resultList = []
 
     //筛选是用户发布还是接下的委托订单
@@ -184,20 +188,12 @@ onLoad(async () => {
     //获取委托委托订单列表
     // const result = await import("../../static/order-collection.json")
     // orderList.value = result.default
-
-    let loginUser = {
-        uid: "20001682412497624",
-        name: "韩某人",
-        phoneNumber: "19102051696"
-    }
-    uni.setStorageSync("loginUser", loginUser)
-    console.log("我的订单，登录用户的UID", loginUser.uid)
-
 })
 
 // 页面每次出现时
 onShow(async () => {
-    let uid = uni.getStorageSync("loginUser").uid
+    //从全局变量中获取用户uid
+    let uid = loginUserStore.user.uid
 
     await wx.cloud.callFunction({
         name: "getAllMyOrdersController",

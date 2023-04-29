@@ -44,7 +44,11 @@ import { OrderListItemCard } from "../../components/OrderListItemCard.vue";
 import { BottomPanel } from "../../components/BottomPanel.vue";
 import { computed } from 'vue';
 import { _ } from 'lodash'
+import { useLoginUserStore } from '../../store/modules/loginUserStore'
+import { useTimerControlStore } from '../../store/modules/timerControlStore';
 
+const timerControlStore = useTimerControlStore()
+const loginUserStore = useLoginUserStore()
 
 //响应式状态
 const segIndex = ref(0)
@@ -82,8 +86,6 @@ const orderListOnDisplay = computed(() => {
 
 //筛选将要展示的委托订单列表
 const orderListFilter = computed(() => {
-    //从全局变量中获取当前的用户信息
-    let currentUser = uni.getStorageSync("logintUser")
     let resultList = orderList.value
     //根据委托订单类型进行筛选
     if (orderTypeCondition.value === 1) {
@@ -116,7 +118,7 @@ const orderListFilter = computed(() => {
 async function getLatestOrders() {
     //获取当前用户的uid
     let latestOrders = []
-    let posterUid = uni.getStorageSync("loginUser").uid
+    let posterUid = loginUserStore.user.uid
     console.log("最新的委托,当前登录的用户UID", posterUid)
     await wx.cloud.callFunction({
         name: "getLatestOrdersController",
@@ -151,7 +153,7 @@ async function getUserNearbyTasks() {
         cid = uni.getStorageSync("campus").cid
 
         //从全局变量中获取到校区信息
-        uid = uni.getStorageSync("loginUser").uid
+        uid = loginUserStore.user.uid
         console.log("附近的委托，当前登录的用户UID", uid)
 
         uni.getLocation({
@@ -219,7 +221,6 @@ async function onSegmentChange(e) {
             title: '定位中,请稍等'
         })
         orderList.value = await getUserNearbyTasks()
-        console.log("附近的委托订单列表1111", orderList.value)
         uni.hideLoading()
     }
 }
@@ -242,8 +243,9 @@ async function takeTaskDialogConfirm() {
     console.log("接下该委托订单!", selectedOrder.value)
 
     let _id = selectedOrder.value._id
+
     //从全局变量中获取到登录的用户信息
-    let loginUser = uni.getStorageSync("loginUser")
+    let loginUser = loginUserStore.user
     console.log("接下委托订单,当前的用户UID", loginUser.uid)
 
     //promis处理用户定位的异步操作
@@ -283,8 +285,19 @@ async function takeTaskDialogConfirm() {
             //如果后端更新成功
             console.log("请求后端的结果", res);
             if (res.result.msg[0] == "更新成功" && res.result.msg[1] == "更新成功") {
+                //如果待上传地址订单编号数组是从空的变成有的，就新开启一个定时器
+                if (timerControlStore.orderIdList.length == 0) {
+                    timerControlStore.setNewTimer(true)
+                } else {
+                    //如果不是，则不开启
+                    timerControlStore.setNewTimer(false)
+                }
+                //将当前待上传位置信息的订单的id添加到控制定时器的全局变量里
+                timerControlStore.addOrderIdToList(selectedOrder.value.id)
+                console.log('当前待上传位置信息的订单ID数组',timerControlStore.orderIdList)
 
                 uni.hideLoading()
+                
                 //将接下的订单信息保存在全局变量中并传递给订单详情页面
                 uni.setStorageSync("orderDetail", selectedOrder.value)
                 uni.navigateTo({
@@ -331,20 +344,11 @@ async function freshOrderList() {
 
 //页面生命周期
 onLoad(async (option) => {
-
-    //设置当前登录的用户
-    uni.setStorageSync("loginUser", {
-        uid: "20001682412497624",
-        name: "韩先生",
-        phoneNumber: "19102051696",
-    })
+    //设置当前的校区编号
     uni.setStorageSync("campus", { cid: "0001" })
-
-
     console.log("页面参数为", option)
     //从前一个页面获取当前页的分段标签
     segIndex.value = parseInt(option.segIndex)
-    await freshOrderList()
 })
 
 onShow(async () => {

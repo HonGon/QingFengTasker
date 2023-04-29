@@ -1,6 +1,6 @@
 <template>
     <scroll-view class="content" :scroll-y="true" :enable-flex="true">
-        <uni-section title="发布委托" type="square" titleFontSize="39rpx">
+        <uni-section title="修改订单" type="square" titleFontSize="39rpx">
             <uni-list>
                 <uni-list-item title="委托类型：" />
                 <view class="task-type select">
@@ -19,8 +19,6 @@
                         <text>{{ contentErrMsg }}</text>
                     </view>
                 </template>
-
-
 
                 <uni-list-item title="起点地址：" />
                 <view class="start-address address">
@@ -84,9 +82,6 @@
                         </view>
                     </template>
                 </uni-list-item>
-                <!-- <view class="task-note-error error">
-                    <text >*请输入委托报酬*</text>
-                </view> -->
 
                 <uni-list-item title="" />
 
@@ -139,9 +134,9 @@
                             type="text" placeholder="请输入（可选）"></uni-easyinput>
                     </template>
                 </uni-list-item>
-   
+
                 <uni-list-item title="附件" rightText="可选" />
-                <ImagePicker @imageChange="onSelectedImageChange">
+                <ImagePicker :imageList="imageList" @imageChange="onSelectedImageChange">
                 </ImagePicker>
             </uni-list>
         </uni-section>
@@ -154,11 +149,11 @@
         </uni-popup>
 
     </scroll-view>
-    <BottomPanel :buttonIndexArray="bottomButtonIndexArray" @clickBottomButton="onPost"></BottomPanel>
+    <BottomPanel :buttonIndexArray="bottomButtonIndexArray" @clickBottomButton="onModify"></BottomPanel>
 
-    <uni-popup ref="postDialog" type="dialog">
-        <uni-popup-dialog :type="postDialogType" cancelText="返回" confirmText="确认" title="发布结果" :content="postDiaglogContent"
-            @confirm="onPostDialogConfirm"></uni-popup-dialog>
+    <uni-popup ref="modifyDialog" type="dialog">
+        <uni-popup-dialog :type="modifyDialogType" cancelText="返回" confirmText="确认" title="修改订单"
+            :content="modifyDialogContent" @confirm="onModifyDialogConfirm"></uni-popup-dialog>
     </uni-popup>
 </template>
 
@@ -239,30 +234,44 @@ const isLimitEndTime = ref(false)               //是否限定了截止时间
 const endTimeButtonText = ref("限定时间")        //截止时间按钮显示的文本，限定还是不限定
 const isChooseStartAddress = ref(true)
 
-const markers = ref([])                             //传入地图组件的标记点
-const bottomButtonIndexArray = ref([0, 0, 1, 0, 1])     //控制底部面板组件显示按钮的数组
+const markers = ref([])                                     //传入地图组件的标记点
+const bottomButtonIndexArray = ref([0, 1, 1, 0, 0, 0])     //控制底部面板组件显示按钮的数组
 
-const popup = ref(null)                             //模板引用uni.popup
-const postDialog = ref(null)
-const postDialogType = ref("info")
-const postDiaglogContent = ref("")
+const popup = ref(null)                                    //模板引用uni.popup
+const modifyDialog = ref(null)
+const modifyDialogType = ref("info")
+const modifyDialogContent = ref("")
 
-const showContentErrMsg = ref(true)
+const showContentErrMsg = ref(false)
 const contentErrMsg = ref("* 委托内容不能为空！*")
-const showPosterNameErrMsg = ref(true)
+const showPosterNameErrMsg = ref(false)
 const posterNameErrMsg = ref("* 联系人内容不能为空！*")
-const showPosterPhoneNumberErrMsg = ref(true)
+const showPosterPhoneNumberErrMsg = ref(false)
 const posterPhoneNumberErrMsg = ref("* 联系电话不能为空！*")
-const showStartAddressErrMsg = ref(true)
-const showEndAddressErrMsg = ref(true)
+const showStartAddressErrMsg = ref(false)
+const showEndAddressErrMsg = ref(false)
 
 //方法
 //处理图片附件变化事件
 function onSelectedImageChange(e) {
     imageList.value = e.imageList
-    console.log("当前附件列表信息", imageList.value)
+    console.log("当前附件列表信息", order.value.attachmentList)
+    console.log("当前图片列表信息", imageList.value)
+    order.value.attachmentList = order.value.attachmentList.filter(a => {
+        let arr = []
+        let imageName = ''
+        for (let i = 0; i < imageList.value.length; i++) {
+            arr = imageList.value[i].path.split('/')
+            imageName = arr[arr.length - 1]
+            if (a.indexOf(imageName) != -1) {
+                return true
+            } else {
+                return false
+            }
+        }
+    })
+    console.log('当前的附件列表', order.value.attachmentList)
 }
-
 
 //处理点击选择起始地址按钮事件
 function onClickAddressButton(e) {
@@ -325,18 +334,18 @@ function onEndTimeChange(e) {
     setEndTimestamp(selectedTime.value)         //设置截止时间
 }
 
-//处理点击发布按钮事件
-function onPost(e) {
-    if (e === 5) {
+//处理点击修改按钮事件
+function onModify(e) {
+    if (e === 2) {
         if ((!showContentErrMsg.value) && (!showPosterNameErrMsg.value) && (!showPosterPhoneNumberErrMsg.value)
             && (!showStartAddressErrMsg.value) && (!showEndAddressErrMsg.value)) {
-            postDialogType.value = "success"
-            postDiaglogContent.value = "将发布已填写的跑腿委托订单，是否发布？"
-            postDialog.value.open()
+            modifyDialogType.value = "success"
+            modifyDialogContent.value = "将修改已填写的跑腿委托订单，是否修改？"
+            modifyDialog.value.open()
         } else {
-            postDialogType.value = "error"
-            postDiaglogContent.value = "请检查已填写的跑腿委托订单内容！"
-            postDialog.value.open()
+            modifyDialogType.value = "error"
+            modifyDialogContent.value = "请检查已填写的跑腿委托订单内容！"
+            modifyDialog.value.open()
         }
         console.log("点击了底部的发布按钮")
 
@@ -347,63 +356,68 @@ function onPost(e) {
     }
 }
 
-//处理点击确认发布按钮事件
-async function onPostDialogConfirm() {
+//处理点击确认修改按钮事件
+async function onModifyDialogConfirm() {
     uni.showLoading({
-        title: "发布委托中"
+        title: "提交修改中"
     })
-    if (postDialogType.value === "success") {
-        //获取当前登录用户的Uid
-        let poster = loginUserStore.user
-        order.value.poster.uid = poster.uid
+    if (modifyDialogType.value === "success") {
+        //获取当前订单发布者的Uid
+        let uid = order.value.poster.uid
 
         //处理用户上传的附件
         if (imageList.value.length != 0) {
             let fileName = ""
-            let attachmentListTemp = imageList.value
+            //如果用户选了新的图片作为附件，那就把新的图片上传到云存储中
+            //而imageList中混合了path为临时url和本地存储路径的图片，故需要将其本地存储的筛选出来，再上传
+            let attachmentListTemp = imageList.value.filter(i => i.path.indexOf('tmp') != -1)
             let attachmentListTempNew = []
             console.log("还没有上传图片的", order.value)
             for (let i = 0; i < attachmentListTemp.length; i++) {
                 fileName = (attachmentListTemp[i].path).split('/')[3]
                 await new Promise(async (resolve, reject) => {
                     wx.cloud.uploadFile({
-                        cloudPath: `user/${poster.uid}/${fileName}`, // 上传至云端的路径
+                        cloudPath: `user/${uid}/${fileName}`, // 上传至云端的路径
                         filePath: attachmentListTemp[i].path, // 小程序临时文件路径
                         success: res => {
                             // 返回文件 ID
                             console.log("返回文件ID", res.fileID)
                             resolve(res)
+                        },
+                        fail: err => {
+                            reject(err)
                         }
                     })
                 }).then((res) => {
                     attachmentListTempNew.push(res.fileID)
+                }).catch(err => {
+                    console.log(err)
                 })
             }
-            order.value.attachmentList = attachmentListTempNew
+            order.value.attachmentList.push(...attachmentListTempNew)
             console.log("刚刚上传完图片的", order.value)
         }
 
         //请求后端
         await wx.cloud.callFunction({
-            name: "postTaskController",
+            name: "modifyOrderController",
             data: {
                 order: order.value
             }
         }).then(res => {
-            if (res.result.msg == "插入成功") {
+            if (res.result.msg == "修改成功") {
                 uni.hideLoading()
                 console.log("请求后端结束后的", order.value)
-                setTimeout(() => {
-                    //跳转至我的订单页面
-                    uni.switchTab({
-                        url: "/pages/my-orders/my-orders"
-                    })
-                }, 2100)
                 uni.showToast({
-                    title: "发布委托成功！",
+                    title: "修改订单成功！",
                     duration: 2000
                 })
-
+                setTimeout(() => {
+                    //跳转至我的订单页面
+                    uni.redirectTo({
+                        url: "/pages/order-detail/order-detail"
+                    })
+                }, 2100)
             } else {
                 uni.showToast({
                     title: "出错了，请稍后再试",
@@ -469,30 +483,71 @@ function onPosterPhoneNumberFocus() {
     showPosterPhoneNumberErrMsg.value = false
 }
 
-onLoad(async (option) => {
+//页面生命周期
+onLoad(async () => {
+    uni.showLoading()
     let poster = loginUserStore.user
-    console.log("发布委托,当前登录的用户UID", poster.uid)
-    //获取委托订单类型
-    // console.log(option.orderType)
-    order.value.type = parseInt(option.orderType)
+    console.log("修改委托,当前登录的用户UID", poster.uid)
 
-    //获取当前时间
-    let currentTime = new Date()
-    let hh = currentTime.getHours()
-    let mm = (currentTime.getMinutes() + 10)        //截止时间默认当前时间往后推迟10分钟
-    if (mm >= 60) {
-        hh = hh + 1
-        mm = mm - 60
+    //从缓存中获取待更新的委托订单数据
+    order.value = uni.getStorageSync('modifyOrderDetail')
+    console.log('当前需要修改的订单信息', order.value)
+    //检查附件信息，如果有附件，需要通过云存储api获取附件的临时url
+    if (order.value.attachmentList.length != 0) {
+        console.log('订单附件长度不为零')
+        new Promise((resolve, reject) => {
+            let fileList = []
+            wx.cloud.getTempFileURL({
+                fileList: order.value.attachmentList,
+                success: res => {
+                    fileList = res.fileList
+                    resolve({ fileList })
+                    console.log('临时url表', res.fileList)
+                }
+            })
+        }).then(({ fileList }) => {
+            let id = 0
+            for (let i = 0; i < fileList.length; i++) {
+                imageList.value.push({
+                    id: id++,
+                    path: fileList[i].tempFileURL
+                })
+            }
+            console.log('图片列表', imageList.value)
+        })
     }
-    if (hh >= 24) {
-        hh = 0
+
+
+    //获取原订单的截止时间信息
+    let endTimestamp = new Date(parseInt(order.value.endTimestamp))
+    //如果原订单限制了时间
+    if (endTimestamp != 0) {
+        let hh = endTimestamp.getHours()
+        let mm = endTimestamp.getMinutes()
+        //设置当前选择的截止时间
+        selectedTime.value = hh + ":" + mm
+        isLimitEndTime.value = true
+        endTimeButtonText.value = "不限定时间"
+    } else {
+        //如果原订单没有限制时间
+        //获取当前时间
+        let currentTime = new Date()
+        let hh = currentTime.getHours()
+        let mm = (currentTime.getMinutes() + 10)        //截止时间默认当前时间往后推迟10分钟
+        if (mm >= 60) {
+            hh = hh + 1
+            mm = mm - 60
+        }
+        if (hh >= 24) {
+            hh = 0
+        }
+
+        hh = hh < 10 ? "0" + hh.toString() : hh.toString()
+        mm = mm < 10 ? "0" + mm.toString() : mm.toString()
+
+        isLimitEndTime.value = false
+        endTimeButtonText.value = "限定时间"
     }
-
-    hh = hh < 10 ? "0" + hh.toString() : hh.toString()
-    mm = mm < 10 ? "0" + mm.toString() : mm.toString()
-
-    //设置当前选择的截止时间
-    selectedTime.value = hh + ":" + mm
 
     let centerLocation = {
         name: "广东工业大学龙洞校区食堂",
@@ -532,10 +587,11 @@ onLoad(async (option) => {
         })
     }
     markers.value = locationMarkers
+    uni.hideLoading()
 })
 
 </script>
 
 <style lang="scss" scoped>
-@import "./post-task.scss";
+@import "./modify-order.scss";
 </style>

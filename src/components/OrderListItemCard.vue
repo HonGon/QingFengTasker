@@ -61,7 +61,7 @@
             <!-- 物品简略信息 -->
             <uni-row>
                 <uni-col :span="8">
-                    <text class="order-list-item-body-row-type">物体重量(Kg)：</text>
+                    <text class="order-list-item-body-row-type">物品重量(Kg)：</text>
                 </uni-col>
                 <uni-col :span="14" :push="2">
                     <text class="order-list-item-body-row-object-weight">{{ order.relatedOb.weight }}</text>
@@ -69,7 +69,7 @@
             </uni-row>
             <uni-row>
                 <uni-col :span="8">
-                    <text class="order-list-item-body-row-type"> 物体体积：</text>
+                    <text class="order-list-item-body-row-type"> 物品体积：</text>
                 </uni-col>
                 <uni-col :span="14" :push="2">
                     <text class="order-list-item-body-row-object-volume">{{ relatedObVolume }}</text>

@@ -130,7 +130,7 @@
     </scroll-view>
 
     <uni-popup ref="cancelDialogPopup" type="dialog">
-        <uni-popup-dialog type="error" cancelText="返回" confirmText="确认" title="修改订单" content="确认要取消订单吗？"
+        <uni-popup-dialog type="error" cancelText="返回" confirmText="确认" title="取消订单" content="确认要取消订单吗？"
             @confirm="onCancelDialogConfirm"></uni-popup-dialog>
     </uni-popup>
 
@@ -147,6 +147,11 @@ import { ImagePicker } from '../../components/ImagePicker.vue'
 import { MapWithMarkers } from "../../components/MapWithMarkers.vue"
 import { OrderListItemCard } from "../../components/OrderListItemCard.vue"
 import { BottomPanel } from "../../components/BottomPanel.vue"
+import { useLoginUserStore } from '../../store/modules/loginUserStore'
+import { useTimerControlStore } from '../../store/modules/timerControlStore';
+
+const timerControlStore = useTimerControlStore()
+const loginUserStore = useLoginUserStore()
 
 //响应式状态
 const scale = ref(16)               //地图缩放程度
@@ -156,8 +161,8 @@ const centerLocation = ref({
     longitude: 0,
     latitude: 0
 })
-const attachmentSrc = ref("")       //当前选中的附件
-const popup = ref(null)             //模板引用，引用uniapp的遮罩层
+const attachmentSrc = ref("")           //当前选中的附件
+const popup = ref(null)                 //模板引用，引用uniapp的遮罩层
 const cancelDialogPopup = ref(null)
 const finishDialogPopup = ref(null)
 
@@ -189,22 +194,23 @@ const showMap = computed(() => {
 })
 //底部面板按钮控制
 const ButtonIndexArray = computed(() => {
-    let logintUser = uni.getStorageSync("loginUser")
+    //从全局变量中获取登录的用户信息
+    let loginUser = loginUserStore.user
     //如果订单是待接取状态
     if (order.value.state === 1) {
         return [1, 1, 1, 0, 0, 0]
     } else if (order.value.state === 2) {  //如果订单是待接取状态
         //判断当前登录用户的身份
-        if (logintUser.uid == order.value.poster.uid) {
+        if (loginUser.uid == order.value.poster.uid) {
             return [0, 0, 1, 1, 0, 0]
-        } else if (logintUser.uid == order.value.taker.uid) {
+        } else if (loginUser.uid == order.value.taker.uid) {
             return [0, 0, 1, 0, 0, 1]
         }
     } else if (order.value.state === 3) {  //未付款
         //判断当前登录用户的身份
-        if (logintUser.uid == order.value.poster.uid) {
+        if (loginUser.uid == order.value.poster.uid) {
             return [0, 0, 1, 1, 0, 0]
-        } else if (logintUser.uid == order.value.taker.uid) {
+        } else if (loginUser.uid == order.value.taker.uid) {
             return [0, 0, 1, 0, 0, 0]
         }
         return [0, 0, 1, 1, 0, 0]
@@ -227,6 +233,11 @@ function onClickBottomButton(e) {
         cancelDialogPopup.value.open()
     } else if (e === 2) {       //点击了修改按钮
         console.log("修改订单！")
+        uni.setStorageSync('modifyOrderDetail',order.value)
+        uni.navigateTo({
+            url:'/pages/modify-order/modify-order'
+        })
+
     } else if (e === 3) {       //点击了返回按钮
         //返回上一个页面
         console.log("返回！")
@@ -332,7 +343,7 @@ function onCancelDialogConfirm() {
 
 //处理完成订单点击事件
 function onFinishDialogConfirm() {
-    console.log("完成了订单！")
+    console.log("提交完成订单！")
     wx.cloud.callFunction({
         name: "finishOrderController",
         data: {
@@ -340,6 +351,10 @@ function onFinishDialogConfirm() {
         }
     }).then(res => {
         if (res.result.msg == "提交成功") {
+            //将已完成的订单的ID从控制全局位置信息上传的定时器全局变量里面的
+            //待上传位置信息订单ID列表中删除
+            timerControlStore.deleteOrderIdToList( order.value.id )
+
             uni.showToast({
                 title: "提交完成成功！",
             })
