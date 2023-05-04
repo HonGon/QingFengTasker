@@ -74,7 +74,7 @@ const noticeList = ref([
     nid: '001',
     title: '一月最新通告',
     date: '2023年01月28日',
-    content: '四月最新通告四月最新通告四月最新通告'
+    content: '一月最新通告一月最新通告一月最新通告一月最新通告一月最新通告一月最新通告一月最新通告一月最新通告一月最新通告一月最新通告一月最新通告一月最新通告一月最新通告一月最新通告'
   },
   {
     nid: '002',
@@ -104,8 +104,8 @@ function onClickTakeIcon(segIndex) {
 onLoad(() => {
   console.log('进入了首页！')
   //用户静默登录
-  let openid = 'xyzxyz111122228888'  //韩某人
-  // let openid = 'abc123456789abc'  //小韩
+  // let openid = 'xyzxyz111122228888'  //韩某人
+  let openid = 'abc123456789abc'  //小韩
 
   uni.showLoading()
   wx.cloud.callFunction({

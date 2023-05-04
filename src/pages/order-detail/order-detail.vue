@@ -353,7 +353,7 @@ function onFinishDialogConfirm() {
         if (res.result.msg == "提交成功") {
             //将已完成的订单的ID从控制全局位置信息上传的定时器全局变量里面的
             //待上传位置信息订单ID列表中删除
-            timerControlStore.deleteOrderIdToList( order.value.id )
+            timerControlStore.deleteOrderIdFromList( order.value.id )
 
             uni.showToast({
                 title: "提交完成成功！",
@@ -472,9 +472,6 @@ onLoad(async () => {
     }
     uni.setStorageSync("centerLocation", centerLocation.value)
     uni.hideLoading()
-})
-
-onLoad(async () => {
 })
 </script>
 

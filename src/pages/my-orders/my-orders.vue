@@ -170,8 +170,6 @@ function onOrderStateConditionChange(e) {
     console.log("当前委托订单状态筛选条件标签", e)
 }
 
-
-
 //处理委托订单项卡片点击事件
 function checkOrderDetail(e) {
     console.log("来自子组件的点击事件！", e)

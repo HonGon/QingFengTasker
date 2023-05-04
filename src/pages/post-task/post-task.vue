@@ -240,7 +240,7 @@ const endTimeButtonText = ref("限定时间")        //截止时间按钮显示�
 const isChooseStartAddress = ref(true)
 
 const markers = ref([])                             //传入地图组件的标记点
-const bottomButtonIndexArray = ref([0, 0, 1, 0, 1])     //控制底部面板组件显示按钮的数组
+const bottomButtonIndexArray = ref([0, 0, 1, 0, 1, 0])     //控制底部面板组件显示按钮的数组
 
 const popup = ref(null)                             //模板引用uni.popup
 const postDialog = ref(null)
@@ -249,9 +249,9 @@ const postDiaglogContent = ref("")
 
 const showContentErrMsg = ref(true)
 const contentErrMsg = ref("* 委托内容不能为空！*")
-const showPosterNameErrMsg = ref(true)
+const showPosterNameErrMsg = ref(false)
 const posterNameErrMsg = ref("* 联系人内容不能为空！*")
-const showPosterPhoneNumberErrMsg = ref(true)
+const showPosterPhoneNumberErrMsg = ref(false)
 const posterPhoneNumberErrMsg = ref("* 联系电话不能为空！*")
 const showStartAddressErrMsg = ref(true)
 const showEndAddressErrMsg = ref(true)
@@ -264,7 +264,7 @@ function onSelectedImageChange(e) {
 }
 
 
-//处理点击选择起始地址按钮事件
+//处理点击选择地址按钮事件
 function onClickAddressButton(e) {
     console.log(e)
     if (e === 1) {
@@ -476,6 +476,10 @@ onLoad(async (option) => {
     // console.log(option.orderType)
     order.value.type = parseInt(option.orderType)
 
+    //预填写委托订单发布者的联系信息
+    order.value.poster.name = loginUserStore.user.name
+    order.value.poster.phoneNumber = loginUserStore.user.phoneNumber
+
     //获取当前时间
     let currentTime = new Date()
     let hh = currentTime.getHours()
@@ -493,12 +497,6 @@ onLoad(async (option) => {
 
     //设置当前选择的截止时间
     selectedTime.value = hh + ":" + mm
-
-    let centerLocation = {
-        name: "广东工业大学龙洞校区食堂",
-        longitude: 113.358029,
-        latitude: 23.197092
-    }
 
     //导入的预设地址
     let result = await import("../../static/preset-locations.json")

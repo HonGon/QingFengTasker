@@ -265,10 +265,9 @@ function onSelectedImageChange(e) {
             imageName = arr[arr.length - 1]
             if (a.indexOf(imageName) != -1) {
                 return true
-            } else {
-                return false
             }
         }
+        return false
     })
     console.log('当前的附件列表', order.value.attachmentList)
 }

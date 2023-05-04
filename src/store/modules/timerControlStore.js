@@ -18,7 +18,7 @@ export const useTimerControlStore = defineStore('timerControl',{
             this.orderIdList.push( orderId )
         },
 
-        deleteOrderIdToList( orderId ){
+        deleteOrderIdFromList( orderId ){
             this.orderIdList = this.orderIdList.filter( id => id != orderId )
         },
         //测试用
